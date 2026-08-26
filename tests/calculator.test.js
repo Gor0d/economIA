@@ -6,6 +6,7 @@ const {
   formatMoney,
   isValidExchangeRate,
   parseTokenValue,
+  splitTokenTotal,
 } = require("../calculator.js");
 
 test("interpreta formatos brasileiros e internacionais de tokens", () => {
@@ -40,6 +41,14 @@ test("valida câmbio estritamente positivo", () => {
   assert.equal(isValidExchangeRate(0), false);
   assert.equal(isValidExchangeRate(-2), false);
   assert.equal(isValidExchangeRate(Number.NaN), false);
+});
+
+test("divide o total de tokens pelo percentual de saída", () => {
+  assert.deepEqual(splitTokenTotal(10_000_000, 20), {
+    inputTokens: 8_000_000,
+    outputTokens: 2_000_000,
+  });
+  assert.ok(Number.isNaN(splitTokenTotal(1000, 120).inputTokens));
 });
 
 test("formata moeda sem esconder custos pequenos", () => {

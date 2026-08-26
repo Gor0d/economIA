@@ -1,7 +1,18 @@
 const els = {
   inputTokens: document.getElementById("inputTokens"),
   outputTokens: document.getElementById("outputTokens"),
+  totalTokens: document.getElementById("totalTokens"),
+  outputShare: document.getElementById("outputShare"),
+  shareValue: document.getElementById("shareValue"),
+  splitSummary: document.getElementById("splitSummary"),
+  detailedFields: document.getElementById("detailedFields"),
+  totalFields: document.getElementById("totalFields"),
+  usageModeButtons: [...document.querySelectorAll("[data-usage-mode]")],
+  ratioPresetButtons: [...document.querySelectorAll("[data-output-share]")],
+  volumeButtons: [...document.querySelectorAll("[data-token-total]")],
   modelUsed: document.getElementById("modelUsed"),
+  modelSearch: document.getElementById("modelSearch"),
+  providerFilter: document.getElementById("providerFilter"),
   currency: document.getElementById("currency"),
   rate: document.getElementById("rate"),
   rateWrap: document.getElementById("rateWrap"),
@@ -9,33 +20,57 @@ const els = {
   refreshRate: document.getElementById("refreshRate"),
   presetBtn: document.getElementById("presetBtn"),
   results: document.getElementById("results"),
+  resultCount: document.getElementById("resultCount"),
+  noResults: document.getElementById("noResults"),
   usedSummary: document.getElementById("usedSummary"),
   emptyState: document.getElementById("emptyState"),
   pricingDate: document.getElementById("pricingDate"),
+  pricingDateTop: document.getElementById("pricingDateTop"),
 };
 
-const { calcCost, formatMoney, formatNumber, isValidExchangeRate, parseTokenValue } = CalculatorCore;
+const {
+  calcCost,
+  formatMoney,
+  formatNumber,
+  isValidExchangeRate,
+  parseTokenValue,
+  splitTokenTotal,
+} = CalculatorCore;
+
 const STORAGE_KEY = "calc-tokens-prefs";
 const RATE_CACHE_KEY = "calc-tokens-usd-brl";
 const RATE_CACHE_TTL_MS = 12 * 60 * 60 * 1000;
 const EXCHANGE_RATE_URL = "https://api.frankfurter.dev/v2/rate/USD/BRL";
 
+let usageMode = "detailed";
+
 function populateModelSelect() {
   const groups = {};
-  for (const m of PRICING) {
-    (groups[m.provider] ||= []).push(m);
+  for (const model of PRICING) {
+    (groups[model.provider] ||= []).push(model);
   }
+
   els.modelUsed.innerHTML = "";
   for (const [provider, models] of Object.entries(groups)) {
-    const og = document.createElement("optgroup");
-    og.label = provider;
-    for (const m of models) {
-      const opt = document.createElement("option");
-      opt.value = m.id;
-      opt.textContent = `${m.name} ($${m.input}/$${m.output} por 1M)`;
-      og.appendChild(opt);
+    const group = document.createElement("optgroup");
+    group.label = provider;
+    for (const model of models) {
+      const option = document.createElement("option");
+      option.value = model.id;
+      option.textContent = `${model.name} · US$ ${model.input}/${model.output} por 1M`;
+      group.appendChild(option);
     }
-    els.modelUsed.appendChild(og);
+    els.modelUsed.appendChild(group);
+  }
+}
+
+function populateProviderFilter() {
+  const providers = [...new Set(PRICING.map((model) => model.provider))];
+  for (const provider of providers) {
+    const option = document.createElement("option");
+    option.value = provider;
+    option.textContent = provider;
+    els.providerFilter.appendChild(option);
   }
 }
 
@@ -47,8 +82,12 @@ function loadPrefs() {
     if (prefs.currency) els.currency.value = prefs.currency;
     if (prefs.rate) els.rate.value = prefs.rate;
     if (prefs.modelUsed) els.modelUsed.value = prefs.modelUsed;
+    if (prefs.inputTokens) els.inputTokens.value = prefs.inputTokens;
+    if (prefs.outputTokens) els.outputTokens.value = prefs.outputTokens;
+    if (prefs.outputShare) els.outputShare.value = prefs.outputShare;
+    if (prefs.usageMode === "total" || prefs.usageMode === "detailed") usageMode = prefs.usageMode;
   } catch {
-    // ignora preferências corrompidas
+    // Preferências corrompidas não impedem o uso da calculadora.
   }
 }
 
@@ -60,15 +99,21 @@ function savePrefs() {
         currency: els.currency.value,
         rate: els.rate.value,
         modelUsed: els.modelUsed.value,
+        inputTokens: els.inputTokens.value,
+        outputTokens: els.outputTokens.value,
+        outputShare: els.outputShare.value,
+        usageMode,
       })
     );
   } catch {
-    // localStorage indisponível (modo privado, etc.) — segue sem persistir
+    // O site funciona normalmente quando o navegador bloqueia armazenamento local.
   }
 }
 
 function setEmptyState(message) {
   els.results.innerHTML = "";
+  els.resultCount.textContent = "0 modelos";
+  els.noResults.hidden = true;
   els.usedSummary.hidden = true;
   els.emptyState.textContent = message;
   els.emptyState.hidden = false;
@@ -127,7 +172,7 @@ async function refreshExchangeRate({ force = false } = {}) {
     try {
       localStorage.setItem(RATE_CACHE_KEY, JSON.stringify(rateData));
     } catch {
-      // O site continua funcionando quando o navegador bloqueia armazenamento local.
+      // Cache é opcional.
     }
     applyAutomaticRate(rateData.rate, rateData.date);
     render();
@@ -145,10 +190,177 @@ async function refreshExchangeRate({ force = false } = {}) {
   }
 }
 
+function updateSplitLabels() {
+  const outputShare = Number(els.outputShare.value);
+  els.shareValue.textContent = `${outputShare}%`;
+  els.splitSummary.textContent = `${100 - outputShare}% entrada · ${outputShare}% saída`;
+}
+
+function syncTotalFromDetailed() {
+  const inputTokens = parseTokenValue(els.inputTokens.value);
+  const outputTokens = parseTokenValue(els.outputTokens.value);
+  if (Number.isNaN(inputTokens) || Number.isNaN(outputTokens)) return;
+
+  const total = inputTokens + outputTokens;
+  els.totalTokens.value = String(total);
+  if (total > 0) {
+    const outputShare = Math.min(60, Math.max(5, Math.round((outputTokens / total) * 20) * 5));
+    els.outputShare.value = String(outputShare);
+  }
+  updateSplitLabels();
+}
+
+function syncDetailedFromTotal() {
+  const total = parseTokenValue(els.totalTokens.value);
+  const { inputTokens, outputTokens } = splitTokenTotal(total, Number(els.outputShare.value));
+  if (Number.isNaN(inputTokens) || Number.isNaN(outputTokens)) return;
+
+  els.inputTokens.value = String(inputTokens);
+  els.outputTokens.value = String(outputTokens);
+  updateSplitLabels();
+}
+
+function setUsageMode(mode, { synchronize = true, renderNow = true } = {}) {
+  usageMode = mode === "total" ? "total" : "detailed";
+
+  if (synchronize) {
+    if (usageMode === "total") syncTotalFromDetailed();
+    else syncDetailedFromTotal();
+  }
+
+  els.detailedFields.hidden = usageMode !== "detailed";
+  els.totalFields.hidden = usageMode !== "total";
+  for (const button of els.usageModeButtons) {
+    const active = button.dataset.usageMode === usageMode;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  }
+
+  if (renderNow) render();
+}
+
+function applyQuickVolume(total) {
+  if (usageMode === "detailed") syncTotalFromDetailed();
+  els.totalTokens.value = String(total);
+  syncDetailedFromTotal();
+  render();
+}
+
+function normalizeSearch(value) {
+  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+}
+
+function providerClass(provider) {
+  return `provider-${provider.toLowerCase().replace(/[^a-z0-9]+/g, "")}`;
+}
+
+function providerInitials(provider) {
+  if (provider === "DeepSeek") return "DS";
+  if (provider === "Anthropic") return "A";
+  if (provider === "Mistral") return "M";
+  if (provider === "Google") return "G";
+  if (provider === "OpenAI") return "O";
+  return "x";
+}
+
+function formatUnitPrice(value) {
+  return new Intl.NumberFormat("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 4 }).format(value);
+}
+
+function renderSummary({ usedModel, usedCost, rows, inputTokens, outputTokens, currency, toDisplay }) {
+  const cheapestAlternative = rows.find(({ model }) => model.id !== usedModel.id);
+  const savings = cheapestAlternative ? usedCost - cheapestAlternative.cost : 0;
+  const savingsPct = usedCost > 0 && savings > 0 ? (savings / usedCost) * 100 : 0;
+  const totalTokens = inputTokens + outputTokens;
+
+  let bestOption;
+  if (cheapestAlternative && savings > 0) {
+    bestOption = `
+      <div class="best-option">
+        <div class="best-option-label"><span>Maior economia possível</span><span>−${savingsPct.toFixed(0)}%</span></div>
+        <strong>${cheapestAlternative.model.name}</strong>
+        <p>Economia estimada de ${formatMoney(toDisplay(savings), currency)}</p>
+      </div>`;
+  } else {
+    bestOption = `
+      <div class="best-option">
+        <div class="best-option-label"><span>Melhor custo da tabela</span><span>Top 1</span></div>
+        <strong>${usedModel.name}</strong>
+        <p>Você já está usando o modelo mais econômico desta comparação.</p>
+      </div>`;
+  }
+
+  els.usedSummary.hidden = false;
+  els.usedSummary.innerHTML = `
+    <div class="summary-primary">
+      <div class="used-label">Seu custo estimado</div>
+      <div class="used-model">${usedModel.name}</div>
+      <div class="used-value">${formatMoney(toDisplay(usedCost), currency)}</div>
+      <div class="used-meta">${formatNumber(inputTokens)} entrada + ${formatNumber(outputTokens)} saída</div>
+    </div>
+    <div class="summary-insights">
+      <div class="summary-divider"></div>
+      ${bestOption}
+      <div class="summary-stats">
+        <div class="summary-stat"><span>Volume total</span><strong>${formatNumber(totalTokens)}</strong></div>
+        <div class="summary-stat"><span>Modelos comparados</span><strong>${rows.length}</strong></div>
+      </div>
+    </div>`;
+}
+
+function renderRows(rows, { usedModel, usedCost, currency, toDisplay }) {
+  const query = normalizeSearch(els.modelSearch.value);
+  const provider = els.providerFilter.value;
+  const filteredRows = rows.filter(({ model }) => {
+    const searchable = normalizeSearch(`${model.name} ${model.provider}`);
+    return (!query || searchable.includes(query)) && (!provider || model.provider === provider);
+  });
+
+  els.resultCount.textContent = `${filteredRows.length} ${filteredRows.length === 1 ? "modelo" : "modelos"}`;
+  els.noResults.hidden = filteredRows.length !== 0;
+
+  els.results.innerHTML = filteredRows
+    .map(({ model, cost, diff, diffPct, rank }) => {
+      const isUsed = model.id === usedModel.id;
+      const isBest = rank === 1;
+      let diffLabel = "Mesmo custo";
+      let diffClass = "same-cost";
+
+      if (!isUsed && diff < 0) {
+        diffClass = "diff-good";
+        diffLabel = `↓ Economiza ${formatMoney(toDisplay(-diff), currency)} · ${Math.abs(diffPct).toFixed(0)}%`;
+      } else if (!isUsed && diff > 0) {
+        diffClass = "diff-bad";
+        diffLabel = `↑ Custa ${formatMoney(toDisplay(diff), currency)} a mais · ${diffPct.toFixed(0)}%`;
+      }
+
+      return `
+        <tr class="${isUsed ? "row-used" : ""}">
+          <td class="rank-cell"><span class="rank-number ${isBest ? "best" : ""}">${rank}</span></td>
+          <td class="model-cell">
+            <div class="model-line">
+              <span class="provider-mark ${providerClass(model.provider)}">${providerInitials(model.provider)}</span>
+              <div>
+                <div class="model-name">${model.name}${isUsed ? ' <span class="badge">Seu modelo</span>' : ""}${isBest ? ' <span class="best-badge">Menor custo</span>' : ""}</div>
+                <div class="model-provider">${model.provider}${model.note ? ` · ${model.note}` : ""}</div>
+              </div>
+            </div>
+          </td>
+          <td class="rate-cell">
+            <strong>US$ ${formatUnitPrice(model.input)} / ${formatUnitPrice(model.output)}</strong>
+            <div class="price-detail">entrada / saída</div>
+          </td>
+          <td class="cost-cell">${formatMoney(toDisplay(cost), currency)}</td>
+          <td class="diff-cell ${diffClass}">${diffLabel}</td>
+        </tr>`;
+    })
+    .join("");
+}
+
 function render() {
   const inputTokens = parseTokenValue(els.inputTokens.value);
   const outputTokens = parseTokenValue(els.outputTokens.value);
-  const usedModel = PRICING.find((m) => m.id === els.modelUsed.value);
+  const usedModel = PRICING.find((model) => model.id === els.modelUsed.value);
   const currency = els.currency.value;
   const rate = Number(els.rate.value);
   const toDisplay = (usd) => (currency === "BRL" ? usd * rate : usd);
@@ -156,7 +368,7 @@ function render() {
   els.rateWrap.hidden = currency !== "BRL";
 
   if (!usedModel || Number.isNaN(inputTokens) || Number.isNaN(outputTokens) || inputTokens < 0 || outputTokens < 0) {
-    setEmptyState("Use números válidos e positivos para os tokens. Exemplos: 1.000.000, 267,4M ou 1.2B.");
+    setEmptyState("Revise os tokens informados. Você pode usar 1.000.000, 267,4M ou 1.2B.");
     return;
   }
 
@@ -164,60 +376,29 @@ function render() {
     setEmptyState("Informe uma cotação USD→BRL maior que zero.");
     return;
   }
+
   els.emptyState.hidden = true;
-
   const usedCost = calcCost(usedModel, inputTokens, outputTokens);
-
-  els.usedSummary.hidden = false;
-  els.usedSummary.innerHTML = `
-    <div class="used-label">Custo com ${usedModel.name}</div>
-    <div class="used-value">${formatMoney(toDisplay(usedCost), currency)}</div>
-    <div class="used-meta">${formatNumber(inputTokens)} tokens de entrada + ${formatNumber(outputTokens)} de saída</div>
-  `;
-
-  const rows = PRICING.map((m) => {
-    const cost = calcCost(m, inputTokens, outputTokens);
+  const rows = PRICING.map((model) => {
+    const cost = calcCost(model, inputTokens, outputTokens);
     const diff = cost - usedCost;
     const diffPct = usedCost > 0 ? (diff / usedCost) * 100 : 0;
-    return { model: m, cost, diff, diffPct };
-  }).sort((a, b) => a.cost - b.cost);
+    return { model, cost, diff, diffPct };
+  })
+    .sort((a, b) => a.cost - b.cost)
+    .map((row, index) => ({ ...row, rank: index + 1 }));
 
-  els.results.innerHTML = rows
-    .map(({ model, cost, diff, diffPct }) => {
-      const isUsed = model.id === usedModel.id;
-      let diffLabel = "—";
-      let diffClass = "";
-      if (!isUsed) {
-        if (diff < 0) {
-          diffClass = "diff-good";
-          diffLabel = `▼ economiza ${formatMoney(toDisplay(-diff), currency)} (${Math.abs(diffPct).toFixed(0)}%)`;
-        } else if (diff > 0) {
-          diffClass = "diff-bad";
-          diffLabel = `▲ custa mais ${formatMoney(toDisplay(diff), currency)} (${diffPct.toFixed(0)}%)`;
-        } else {
-          diffLabel = "mesmo custo";
-        }
-      }
-      return `
-        <tr class="${isUsed ? "row-used" : ""}">
-          <td>
-            <div class="model-name">${model.name}${isUsed ? ' <span class="badge">usado</span>' : ""}</div>
-            <div class="model-provider">${model.provider}${model.note ? ` · ${model.note}` : ""}</div>
-          </td>
-          <td class="cost-cell">${formatMoney(toDisplay(cost), currency)}</td>
-          <td class="${diffClass}">${diffLabel}</td>
-        </tr>
-      `;
-    })
-    .join("");
-
+  renderSummary({ usedModel, usedCost, rows, inputTokens, outputTokens, currency, toDisplay });
+  renderRows(rows, { usedModel, usedCost, currency, toDisplay });
   savePrefs();
 }
 
 function loadPreset() {
-  els.inputTokens.value = 267400000;
-  els.outputTokens.value = 114600000;
+  setUsageMode("detailed", { synchronize: false, renderNow: false });
+  els.inputTokens.value = "267400000";
+  els.outputTokens.value = "114600000";
   els.modelUsed.value = "deepseek-v4-flash";
+  syncTotalFromDetailed();
   render();
 }
 
@@ -227,14 +408,36 @@ function showManualRateStatus() {
 }
 
 function showPricingDate() {
-  els.pricingDate.textContent = formatRateDate(PRICING_META.updatedAt);
+  const date = formatRateDate(PRICING_META.updatedAt);
+  els.pricingDate.textContent = date;
+  els.pricingDateTop.textContent = date;
 }
 
 populateModelSelect();
+populateProviderFilter();
 loadPrefs();
-[els.inputTokens, els.outputTokens, els.modelUsed].forEach((el) =>
-  el.addEventListener("input", render)
-);
+syncTotalFromDetailed();
+setUsageMode(usageMode, { synchronize: false, renderNow: false });
+
+els.inputTokens.addEventListener("input", () => {
+  syncTotalFromDetailed();
+  render();
+});
+els.outputTokens.addEventListener("input", () => {
+  syncTotalFromDetailed();
+  render();
+});
+els.totalTokens.addEventListener("input", () => {
+  syncDetailedFromTotal();
+  render();
+});
+els.outputShare.addEventListener("input", () => {
+  syncDetailedFromTotal();
+  render();
+});
+els.modelUsed.addEventListener("input", render);
+els.modelSearch.addEventListener("input", render);
+els.providerFilter.addEventListener("input", render);
 els.currency.addEventListener("input", render);
 els.rate.addEventListener("input", () => {
   showManualRateStatus();
@@ -242,6 +445,22 @@ els.rate.addEventListener("input", () => {
 });
 els.refreshRate.addEventListener("click", () => refreshExchangeRate({ force: true }));
 els.presetBtn.addEventListener("click", loadPreset);
+
+for (const button of els.usageModeButtons) {
+  button.addEventListener("click", () => setUsageMode(button.dataset.usageMode));
+}
+for (const button of els.ratioPresetButtons) {
+  button.addEventListener("click", () => {
+    els.outputShare.value = button.dataset.outputShare;
+    syncDetailedFromTotal();
+    render();
+  });
+}
+for (const button of els.volumeButtons) {
+  button.addEventListener("click", () => applyQuickVolume(Number(button.dataset.tokenTotal)));
+}
+
 showPricingDate();
+updateSplitLabels();
 render();
 refreshExchangeRate();

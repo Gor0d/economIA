@@ -81,11 +81,23 @@
     return Number.isFinite(value) && value > 0;
   }
 
+  function splitTokenTotal(totalTokens, outputSharePercent) {
+    const total = Number(totalTokens);
+    const share = Number(outputSharePercent);
+    if (!Number.isFinite(total) || total < 0 || !Number.isFinite(share) || share < 0 || share > 100) {
+      return { inputTokens: NaN, outputTokens: NaN };
+    }
+
+    const outputTokens = Math.round(total * (share / 100));
+    return { inputTokens: total - outputTokens, outputTokens };
+  }
+
   return {
     calcCost,
     formatMoney,
     formatNumber,
     isValidExchangeRate,
     parseTokenValue,
+    splitTokenTotal,
   };
 });

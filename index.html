@@ -4,82 +4,209 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Compare o custo de tokens entre os principais modelos de IA, em dólar ou real." />
-  <title>Calculadora de Custo de Tokens de IA</title>
+  <meta name="theme-color" content="#07111f" />
+  <title>Tokens.Custo — Compare preços de modelos de IA</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main>
-    <header>
-      <h1>Calculadora de Custo de Tokens de IA</h1>
-      <p>Informe quantos tokens você consumiu, escolha o modelo usado e compare o custo contra as principais IAs do mercado — e veja quanto teria economizado (ou gasto a mais) com cada uma.</p>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+
+  <main class="site-shell">
+    <nav class="topbar" aria-label="Navegação principal">
+      <a class="brand" href="#top" aria-label="Tokens.Custo — início">
+        <span class="brand-mark" aria-hidden="true">T</span>
+        <span>Tokens<span class="brand-dot">.</span>Custo</span>
+      </a>
+      <div class="data-status">
+        <span class="status-dot" aria-hidden="true"></span>
+        Preços verificados em <span id="pricingDateTop">26/08/2026</span>
+      </div>
+    </nav>
+
+    <header id="top" class="hero">
+      <div class="eyebrow"><span>30 modelos</span><span>6 provedores</span><span>Câmbio automático</span></div>
+      <h1>Descubra quanto sua IA<br /><span>realmente custa.</span></h1>
+      <p>Informe seu consumo uma vez. Compare OpenAI, Anthropic, Google, DeepSeek, xAI e Mistral lado a lado.</p>
     </header>
 
-    <section class="panel">
-      <div class="field-grid">
-        <div>
-          <label for="inputTokens">Tokens de entrada (input)</label>
-          <input id="inputTokens" type="text" inputmode="decimal" autocomplete="off" aria-describedby="tokensHint" placeholder="ex: 267400000 ou 267,4M" value="1000000" />
+    <section class="calculator-shell" aria-labelledby="calculatorTitle">
+      <div class="config-panel">
+        <div class="panel-heading">
+          <div>
+            <span class="step-kicker">Configure sua estimativa</span>
+            <h2 id="calculatorTitle">Como você tem os dados?</h2>
+          </div>
+          <span class="live-pill"><span aria-hidden="true"></span> Resultado ao vivo</span>
         </div>
-        <div>
-          <label for="outputTokens">Tokens de saída (output)</label>
-          <input id="outputTokens" type="text" inputmode="decimal" autocomplete="off" aria-describedby="tokensHint" placeholder="ex: 114600000 ou 114,6M" value="200000" />
+
+        <div class="segmented-control" role="group" aria-label="Formato dos dados de consumo">
+          <button class="segment-button active" type="button" data-usage-mode="detailed" aria-pressed="true">
+            Entrada + saída
+            <small>Mais preciso</small>
+          </button>
+          <button class="segment-button" type="button" data-usage-mode="total" aria-pressed="false">
+            Só tenho o total
+            <small>Nós estimamos a divisão</small>
+          </button>
         </div>
-        <div class="model-field">
-          <label for="modelUsed">Modelo que você usou</label>
+
+        <div id="detailedFields" class="field-grid usage-fields">
+          <div class="field-block">
+            <label for="inputTokens">Tokens de entrada</label>
+            <div class="input-shell">
+              <input id="inputTokens" type="text" inputmode="decimal" autocomplete="off" aria-describedby="tokensHint" placeholder="267,4M" value="1000000" />
+              <span>input</span>
+            </div>
+          </div>
+          <div class="field-block">
+            <label for="outputTokens">Tokens de saída</label>
+            <div class="input-shell">
+              <input id="outputTokens" type="text" inputmode="decimal" autocomplete="off" aria-describedby="tokensHint" placeholder="114,6M" value="200000" />
+              <span>output</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="totalFields" class="total-fields" hidden>
+          <div class="field-block">
+            <label for="totalTokens">Total de tokens consumidos</label>
+            <div class="input-shell">
+              <input id="totalTokens" type="text" inputmode="decimal" autocomplete="off" aria-describedby="tokensHint splitHint" placeholder="1,2M" value="1200000" />
+              <span>total</span>
+            </div>
+          </div>
+          <div class="split-control">
+            <div class="split-heading">
+              <label for="outputShare">Quanto foi resposta da IA?</label>
+              <strong id="shareValue">20%</strong>
+            </div>
+            <input id="outputShare" type="range" min="5" max="60" step="5" value="20" />
+            <div class="split-legend"><span>Mais leitura</span><span>Mais geração</span></div>
+            <div class="ratio-presets" aria-label="Perfis de divisão de tokens">
+              <button type="button" data-output-share="15">Chat · 15%</button>
+              <button type="button" data-output-share="30">Código · 30%</button>
+              <button type="button" data-output-share="40">Agentes · 40%</button>
+            </div>
+            <p id="splitHint">Estimativa atual: <strong id="splitSummary">80% entrada · 20% saída</strong></p>
+          </div>
+        </div>
+
+        <p id="tokensHint" class="field-help">Use números completos ou atalhos: 1.000.000, 267,4M, 900K ou 1.2B.</p>
+
+        <div class="quick-volumes" aria-label="Atalhos de volume total">
+          <span>Volume total rápido</span>
+          <div>
+            <button type="button" data-token-total="100000">100K</button>
+            <button type="button" data-token-total="1000000">1M</button>
+            <button type="button" data-token-total="10000000">10M</button>
+            <button type="button" data-token-total="100000000">100M</button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="field-block model-field">
+          <label for="modelUsed"><span class="field-number">2</span> Qual modelo você usou?</label>
           <select id="modelUsed"></select>
         </div>
-      </div>
-      <p id="tokensHint" class="field-help">Aceita formatos como 1.000.000, 1,000,000, 267,4M, 267.4M e 1.2B.</p>
-      <div class="toolbar">
-        <button id="presetBtn" type="button" title="Preenche com o caso do William: 382M tokens em 5 dias no DeepSeek">
-          Exemplo: 382M tokens / 5 dias (DeepSeek)
-        </button>
-        <div class="currency-group">
-          <label class="sr-only" for="currency">Moeda</label>
-          <select id="currency">
-            <option value="USD">US$</option>
-            <option value="BRL">R$</option>
-          </select>
-          <div id="rateWrap" hidden>
-            <label for="rate">Câmbio (US$→R$)</label>
-            <input id="rate" type="number" inputmode="decimal" min="0.0001" step="0.0001" value="5.30" />
-            <button id="refreshRate" class="icon-button" type="button" title="Atualizar cotação USD para BRL" aria-label="Atualizar cotação USD para BRL">↻</button>
+
+        <div class="config-footer">
+          <button id="presetBtn" class="ghost-button" type="button" title="Preenche o caso de 382M tokens no DeepSeek">
+            <span aria-hidden="true">✦</span> Usar exemplo de 382M tokens
+          </button>
+          <div class="currency-group">
+            <label for="currency"><span class="field-number">3</span> Moeda</label>
+            <select id="currency">
+              <option value="USD">USD · US$</option>
+              <option value="BRL">BRL · R$</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="rateWrap" class="rate-wrap" hidden>
+          <div>
+            <label for="rate">Cotação USD → BRL</label>
             <small id="rateStatus" class="rate-status" role="status">Cotação automática</small>
+          </div>
+          <div class="rate-actions">
+            <input id="rate" type="number" inputmode="decimal" min="0.0001" step="0.0001" value="5.30" />
+            <button id="refreshRate" class="icon-button" type="button" title="Atualizar cotação" aria-label="Atualizar cotação USD para BRL">↻</button>
           </div>
         </div>
       </div>
+
+      <aside class="summary-panel" aria-label="Resumo da estimativa">
+        <div id="usedSummary" hidden></div>
+        <div id="emptyState" class="empty-state" hidden></div>
+        <div class="summary-footnote">
+          <span aria-hidden="true">i</span>
+          Estimativa padrão, sem cache, batch ou contexto longo.
+        </div>
+      </aside>
     </section>
 
-    <section id="usedSummary" class="panel used-summary" hidden></section>
+    <section class="results-section" aria-labelledby="resultsTitle">
+      <div class="results-heading">
+        <div>
+          <span class="step-kicker">Comparação completa</span>
+          <h2 id="resultsTitle">Ranking de custo</h2>
+          <p>Do modelo mais econômico ao mais caro para o mesmo volume.</p>
+        </div>
+        <span id="resultCount" class="result-count">30 modelos</span>
+      </div>
 
-    <section id="emptyState" class="panel" hidden>
-      Preencha os tokens de entrada e saída para ver a comparação.
+      <div class="results-toolbar">
+        <div class="search-shell">
+          <span aria-hidden="true">⌕</span>
+          <label class="sr-only" for="modelSearch">Buscar modelo</label>
+          <input id="modelSearch" type="search" placeholder="Buscar modelo ou provedor…" autocomplete="off" />
+        </div>
+        <label class="sr-only" for="providerFilter">Filtrar por provedor</label>
+        <select id="providerFilter">
+          <option value="">Todos os provedores</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="rank-column">#</th>
+              <th>Modelo</th>
+              <th>Preço por 1M</th>
+              <th>Custo estimado</th>
+              <th>Vs. modelo usado</th>
+            </tr>
+          </thead>
+          <tbody id="results"></tbody>
+        </table>
+      </div>
+      <div id="noResults" class="no-results" hidden>Nenhum modelo encontrado com esse filtro.</div>
     </section>
 
-    <section class="panel table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Modelo</th>
-            <th>Custo estimado</th>
-            <th>Vs. modelo usado</th>
-          </tr>
-        </thead>
-        <tbody id="results"></tbody>
-      </table>
-    </section>
+    <details class="methodology">
+      <summary>Como chegamos a esta estimativa?</summary>
+      <div>
+        <p>Multiplicamos seus tokens de entrada e saída pelos preços públicos de cada provedor. A comparação mantém o mesmo volume em todos os modelos; tokenizadores diferentes podem alterar o consumo real.</p>
+        <p>Não incluímos descontos de cache, batch, volume ou tarifas especiais para contexto longo.</p>
+      </div>
+    </details>
 
     <footer>
-      <p>Preços em US$ por 1M de tokens, sem cache, batch ou desconto por volume. A comparação mantém a mesma quantidade de tokens entre modelos; tokenizadores diferentes podem alterar o consumo real.</p>
-      <p>
-        Tabela verificada em <span id="pricingDate">26/08/2026</span>. Fontes oficiais:
-        <a href="https://platform.claude.com/docs/en/about-claude/pricing" target="_blank" rel="noopener noreferrer">Anthropic</a>,
-        <a href="https://developers.openai.com/api/docs/models" target="_blank" rel="noopener noreferrer">OpenAI</a>,
-        <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noopener noreferrer">Google</a>,
-        <a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener noreferrer">DeepSeek</a>,
-        <a href="https://docs.x.ai/developers/pricing" target="_blank" rel="noopener noreferrer">xAI</a> e
-        <a href="https://mistral.ai/pricing/api/" target="_blank" rel="noopener noreferrer">Mistral</a>.
+      <div>
+        <strong>Tokens<span class="brand-dot">.</span>Custo</strong>
+        <p>Uma estimativa clara para escolher melhor.</p>
+      </div>
+      <p class="source-list">
+        Tabela verificada em <span id="pricingDate">26/08/2026</span> ·
+        <a href="https://platform.claude.com/docs/en/about-claude/pricing" target="_blank" rel="noopener noreferrer">Anthropic</a> ·
+        <a href="https://developers.openai.com/api/docs/models" target="_blank" rel="noopener noreferrer">OpenAI</a> ·
+        <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noopener noreferrer">Google</a> ·
+        <a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener noreferrer">DeepSeek</a> ·
+        <a href="https://docs.x.ai/developers/pricing" target="_blank" rel="noopener noreferrer">xAI</a> ·
+        <a href="https://mistral.ai/pricing/api/" target="_blank" rel="noopener noreferrer">Mistral</a>
       </p>
     </footer>
   </main>

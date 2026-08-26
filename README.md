@@ -10,6 +10,10 @@ Ao selecionar real (R$), a cotação USD→BRL é carregada automaticamente pela
 [Frankfurter](https://frankfurter.dev/). O último valor obtido fica salvo no navegador e o
 campo continua editável para simulações manuais.
 
+Para facilitar o preenchimento, a interface oferece dois modos: informar entrada e saída
+separadamente ou informar apenas o total e escolher uma estimativa de divisão. Também há
+atalhos de volume, perfis para chat/código/agentes e busca por modelo ou provedor.
+
 ## Como rodar
 
 Abra `index.html` direto no navegador (duplo clique) ou sirva a pasta com qualquer servidor
