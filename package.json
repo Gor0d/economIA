@@ -1,0 +1,14 @@
+{
+  "name": "calculadora-custo-tokens",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Calculadora estática para comparar custos de tokens entre modelos de IA.",
+  "scripts": {
+    "test": "node --test",
+    "check:sources": "node scripts/check-pricing-sources.mjs",
+    "check": "npm test && npm run check:sources"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

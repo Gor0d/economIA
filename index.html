@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Compare o custo de tokens entre os principais modelos de IA, em dólar ou real." />
+  <title>Calculadora de Custo de Tokens de IA</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Calculadora de Custo de Tokens de IA</h1>
+      <p>Informe quantos tokens você consumiu, escolha o modelo usado e compare o custo contra as principais IAs do mercado — e veja quanto teria economizado (ou gasto a mais) com cada uma.</p>
+    </header>
+
+    <section class="panel">
+      <div class="field-grid">
+        <div>
+          <label for="inputTokens">Tokens de entrada (input)</label>
+          <input id="inputTokens" type="text" inputmode="decimal" autocomplete="off" aria-describedby="tokensHint" placeholder="ex: 267400000 ou 267,4M" value="1000000" />
+        </div>
+        <div>
+          <label for="outputTokens">Tokens de saída (output)</label>
+          <input id="outputTokens" type="text" inputmode="decimal" autocomplete="off" aria-describedby="tokensHint" placeholder="ex: 114600000 ou 114,6M" value="200000" />
+        </div>
+        <div class="model-field">
+          <label for="modelUsed">Modelo que você usou</label>
+          <select id="modelUsed"></select>
+        </div>
+      </div>
+      <p id="tokensHint" class="field-help">Aceita formatos como 1.000.000, 1,000,000, 267,4M, 267.4M e 1.2B.</p>
+      <div class="toolbar">
+        <button id="presetBtn" type="button" title="Preenche com o caso do William: 382M tokens em 5 dias no DeepSeek">
+          Exemplo: 382M tokens / 5 dias (DeepSeek)
+        </button>
+        <div class="currency-group">
+          <label class="sr-only" for="currency">Moeda</label>
+          <select id="currency">
+            <option value="USD">US$</option>
+            <option value="BRL">R$</option>
+          </select>
+          <div id="rateWrap" hidden>
+            <label for="rate">Câmbio (US$→R$)</label>
+            <input id="rate" type="number" inputmode="decimal" min="0.0001" step="0.0001" value="5.30" />
+            <button id="refreshRate" class="icon-button" type="button" title="Atualizar cotação USD para BRL" aria-label="Atualizar cotação USD para BRL">↻</button>
+            <small id="rateStatus" class="rate-status" role="status">Cotação automática</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="usedSummary" class="panel used-summary" hidden></section>
+
+    <section id="emptyState" class="panel" hidden>
+      Preencha os tokens de entrada e saída para ver a comparação.
+    </section>
+
+    <section class="panel table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Modelo</th>
+            <th>Custo estimado</th>
+            <th>Vs. modelo usado</th>
+          </tr>
+        </thead>
+        <tbody id="results"></tbody>
+      </table>
+    </section>
+
+    <footer>
+      <p>Preços em US$ por 1M de tokens, sem cache, batch ou desconto por volume. A comparação mantém a mesma quantidade de tokens entre modelos; tokenizadores diferentes podem alterar o consumo real.</p>
+      <p>
+        Tabela verificada em <span id="pricingDate">26/08/2026</span>. Fontes oficiais:
+        <a href="https://platform.claude.com/docs/en/about-claude/pricing" target="_blank" rel="noopener noreferrer">Anthropic</a>,
+        <a href="https://developers.openai.com/api/docs/models" target="_blank" rel="noopener noreferrer">OpenAI</a>,
+        <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noopener noreferrer">Google</a>,
+        <a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener noreferrer">DeepSeek</a>,
+        <a href="https://docs.x.ai/developers/pricing" target="_blank" rel="noopener noreferrer">xAI</a> e
+        <a href="https://mistral.ai/pricing/api/" target="_blank" rel="noopener noreferrer">Mistral</a>.
+      </p>
+    </footer>
+  </main>
+
+  <script src="pricing.js"></script>
+  <script src="calculator.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
