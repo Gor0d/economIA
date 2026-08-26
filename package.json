@@ -6,6 +6,7 @@
   "scripts": {
     "test": "node --test",
     "check:sources": "node scripts/check-pricing-sources.mjs",
+    "check:drift": "node scripts/check-pricing-drift.mjs",
     "check": "npm test && npm run check:sources"
   },
   "engines": {

@@ -1,0 +1,96 @@
+name: Monitor de precos de IA
+
+on:
+  schedule:
+    # 08:17 America/Sao_Paulo (11:17 UTC). Minuto fora de :00/:30 de propósito.
+    - cron: "17 11 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  check-pricing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Rodar testes de integridade da tabela
+        id: tests
+        run: npm test
+        continue-on-error: true
+
+      - name: Checar mudancas nas paginas oficiais de preco
+        id: drift
+        run: npm run check:drift
+
+      - name: Salvar snapshot atualizado
+        run: |
+          git config user.name "economia-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add scripts/pricing-snapshots.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: atualizar snapshot do monitor de precos"
+            git push
+          fi
+
+      - name: Abrir ou atualizar issue de revisao
+        if: steps.drift.outputs.has_changes == 'true' || steps.tests.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const drift = JSON.parse(fs.readFileSync('scripts/pricing-drift-result.json', 'utf8'));
+            const testsFailed = '${{ steps.tests.outcome }}' === 'failure';
+
+            const lines = ['O monitor automático encontrou algo que precisa de revisão manual em `pricing.js`.', ''];
+
+            if (testsFailed) {
+              lines.push('- ⚠️ **`npm test` falhou** — provavelmente a tabela de preços passou de 45 dias sem revisão, ou algum dado ficou inconsistente. Rode `npm test` localmente pra ver o motivo exato.', '');
+            }
+            if (drift.changed.length > 0) {
+              lines.push('**Páginas de preço que mudaram desde a última checagem:**');
+              for (const item of drift.changed) {
+                lines.push(`- [${item.provider}](${item.url})`);
+              }
+              lines.push('');
+            }
+            if (drift.unreachable.length > 0) {
+              lines.push('**Páginas que falharam ao carregar (podem estar fora do ar ou bloqueando o robô):**');
+              for (const item of drift.unreachable) {
+                lines.push(`- ${item.provider}: ${item.detail} — ${item.url}`);
+              }
+              lines.push('');
+            }
+            lines.push('Isso não significa necessariamente que o preço mudou — só que a página oficial mudou ou ficou inacessível. Confira e atualize `pricing.js` manualmente se for o caso, depois rode `npm run check`.');
+            const body = lines.join('\n');
+
+            const label = 'pricing-watch';
+            const { data: openIssues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: label,
+            });
+
+            if (openIssues.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: openIssues[0].number,
+                body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: 'Revisar pricing.js — possível mudança de preço detectada',
+                body,
+                labels: [label],
+              });
+            }
