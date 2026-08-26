@@ -55,3 +55,9 @@ test("formata moeda sem esconder custos pequenos", () => {
   assert.equal(formatMoney(20, "USD"), "$20.00");
   assert.match(formatMoney(0.0028, "USD"), /0\.0028/);
 });
+
+test("nao usa casas decimais extras quando 2 casas ja sao suficientes", () => {
+  // Regressão: R$ 8,2949 já foi confundido com "8 mil" por ter 4 casas decimais.
+  assert.equal(formatMoney(8.2949, "BRL"), "R$ 8,29");
+  assert.equal(formatMoney(1, "USD"), "$1.00");
+});

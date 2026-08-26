@@ -66,10 +66,13 @@
   }
 
   function formatMoney(value, currency) {
+    // Só usa mais casas decimais quando 2 casas arredondariam o valor pra zero
+    // (ex: US$ 0,0028). Acima de 1 centavo, 2 casas já é inequívoco e evita
+    // algo como "R$ 8,2949" ser lido como "8 mil" à primeira vista.
     return new Intl.NumberFormat(currency === "BRL" ? "pt-BR" : "en-US", {
       style: "currency",
       currency,
-      maximumFractionDigits: Math.abs(value) < 10 ? 4 : 2,
+      maximumFractionDigits: Math.abs(value) < 0.01 ? 4 : 2,
     }).format(value);
   }
 
