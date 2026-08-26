@@ -4,8 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Compare o custo de tokens entre os principais modelos de IA, em dólar ou real." />
-  <meta name="theme-color" content="#07111f" />
+  <meta id="themeColor" name="theme-color" content="#07111f" />
   <title>Tokens.Custo — Compare preços de modelos de IA</title>
+  <script>
+    (() => {
+      try {
+        const savedTheme = localStorage.getItem("tokens-custo-theme");
+        const systemTheme = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        document.documentElement.dataset.theme = savedTheme || systemTheme;
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    })();
+  </script>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -19,16 +30,30 @@
         <span class="brand-mark" aria-hidden="true">T</span>
         <span>Tokens<span class="brand-dot">.</span>Custo</span>
       </a>
-      <div class="data-status">
-        <span class="status-dot" aria-hidden="true"></span>
-        Preços verificados em <span id="pricingDateTop">26/08/2026</span>
+      <div class="topbar-actions">
+        <div class="data-status">
+          <span class="status-dot" aria-hidden="true"></span>
+          Preços verificados em <span id="pricingDateTop">26/08/2026</span>
+        </div>
+        <button id="themeToggle" class="theme-toggle" type="button" aria-label="Ativar modo claro" title="Alternar tema">
+          <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"/></svg>
+          <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.3 15.5A8.5 8.5 0 0 1 8.5 3.7a8.5 8.5 0 1 0 11.8 11.8Z"/></svg>
+        </button>
       </div>
     </nav>
 
     <header id="top" class="hero">
       <div class="eyebrow"><span>30 modelos</span><span>6 provedores</span><span>Câmbio automático</span></div>
-      <h1>Descubra quanto sua IA<br /><span>realmente custa.</span></h1>
+      <h1>Descubra quanto sua IA <span>realmente custa.</span></h1>
       <p>Informe seu consumo uma vez. Compare OpenAI, Anthropic, Google, DeepSeek, xAI e Mistral lado a lado.</p>
+      <div class="provider-cloud" aria-label="Provedores comparados">
+        <span class="provider-chip"><img src="assets/logos/openai.svg" alt="" />OpenAI</span>
+        <span class="provider-chip"><img src="assets/logos/anthropic.svg" alt="" />Anthropic</span>
+        <span class="provider-chip"><img src="assets/logos/google.svg" alt="" />Google</span>
+        <span class="provider-chip"><img src="assets/logos/deepseek.svg" alt="" />DeepSeek</span>
+        <span class="provider-chip"><img src="assets/logos/xai.svg" alt="" />xAI</span>
+        <span class="provider-chip"><img src="assets/logos/mistral.svg" alt="" />Mistral</span>
+      </div>
     </header>
 
     <section class="calculator-shell" aria-labelledby="calculatorTitle">
@@ -207,6 +232,7 @@
         <a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener noreferrer">DeepSeek</a> ·
         <a href="https://docs.x.ai/developers/pricing" target="_blank" rel="noopener noreferrer">xAI</a> ·
         <a href="https://mistral.ai/pricing/api/" target="_blank" rel="noopener noreferrer">Mistral</a>
+        <small>As marcas e logos pertencem aos respectivos proprietários e são usadas apenas para identificação.</small>
       </p>
     </footer>
   </main>

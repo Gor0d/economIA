@@ -66,6 +66,8 @@ function createAppContext() {
     "emptyState",
     "pricingDate",
     "pricingDateTop",
+    "themeToggle",
+    "themeColor",
   ];
   const elements = Object.fromEntries(ids.map((id) => [id, createElement(id)]));
   elements.inputTokens.value = "1000000";
@@ -110,6 +112,7 @@ function createAppContext() {
       },
     },
     document: {
+      documentElement: { dataset: { theme: "dark" } },
       createElement: () => createElement(),
       getElementById: (id) => elements[id],
       querySelectorAll(selector) {
@@ -140,6 +143,10 @@ test("interface renderiza, atualiza câmbio e executa o preset", async () => {
   assert.equal(elements.rateWrap.hidden, true);
   assert.equal(elements.rate.value, "5.1526");
   assert.match(elements.rateStatus.textContent, /Automático/);
+
+  elements.themeToggle.listeners.click();
+  assert.equal(elements.themeToggle.attributes["aria-label"], "Ativar modo escuro");
+  assert.equal(elements.themeToggle.attributes["aria-pressed"], "true");
 
   elements.presetBtn.listeners.click();
   assert.equal(elements.modelUsed.value, "deepseek-v4-flash");

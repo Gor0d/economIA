@@ -26,6 +26,8 @@ const els = {
   emptyState: document.getElementById("emptyState"),
   pricingDate: document.getElementById("pricingDate"),
   pricingDateTop: document.getElementById("pricingDateTop"),
+  themeToggle: document.getElementById("themeToggle"),
+  themeColor: document.getElementById("themeColor"),
 };
 
 const {
@@ -38,11 +40,40 @@ const {
 } = CalculatorCore;
 
 const STORAGE_KEY = "calc-tokens-prefs";
+const THEME_KEY = "tokens-custo-theme";
 const RATE_CACHE_KEY = "calc-tokens-usd-brl";
 const RATE_CACHE_TTL_MS = 12 * 60 * 60 * 1000;
 const EXCHANGE_RATE_URL = "https://api.frankfurter.dev/v2/rate/USD/BRL";
 
 let usageMode = "detailed";
+
+const PROVIDER_LOGOS = {
+  OpenAI: "assets/logos/openai.svg",
+  Anthropic: "assets/logos/anthropic.svg",
+  Google: "assets/logos/google.svg",
+  DeepSeek: "assets/logos/deepseek.svg",
+  xAI: "assets/logos/xai.svg",
+  Mistral: "assets/logos/mistral.svg",
+};
+
+function applyTheme(theme, { persist = true } = {}) {
+  const nextTheme = theme === "light" ? "light" : "dark";
+  document.documentElement.dataset.theme = nextTheme;
+  els.themeColor.setAttribute("content", nextTheme === "light" ? "#f5f7fc" : "#07111f");
+  els.themeToggle.setAttribute("aria-label", nextTheme === "dark" ? "Ativar modo claro" : "Ativar modo escuro");
+  els.themeToggle.setAttribute("aria-pressed", String(nextTheme === "light"));
+  if (persist) {
+    try {
+      localStorage.setItem(THEME_KEY, nextTheme);
+    } catch {
+      // A preferência visual continua aplicada durante a sessão.
+    }
+  }
+}
+
+function initializeTheme() {
+  applyTheme(document.documentElement.dataset.theme || "dark", { persist: false });
+}
 
 function populateModelSelect() {
   const groups = {};
@@ -254,13 +285,9 @@ function providerClass(provider) {
   return `provider-${provider.toLowerCase().replace(/[^a-z0-9]+/g, "")}`;
 }
 
-function providerInitials(provider) {
-  if (provider === "DeepSeek") return "DS";
-  if (provider === "Anthropic") return "A";
-  if (provider === "Mistral") return "M";
-  if (provider === "Google") return "G";
-  if (provider === "OpenAI") return "O";
-  return "x";
+function providerLogo(provider) {
+  const logo = PROVIDER_LOGOS[provider];
+  return logo ? `<img src="${logo}" alt="" loading="lazy" />` : provider.slice(0, 2);
 }
 
 function formatUnitPrice(value) {
@@ -335,11 +362,11 @@ function renderRows(rows, { usedModel, usedCost, currency, toDisplay }) {
       }
 
       return `
-        <tr class="${isUsed ? "row-used" : ""}">
+        <tr class="${isUsed ? "row-used" : ""}" style="--row-delay: ${Math.min(rank, 12) * 24}ms">
           <td class="rank-cell"><span class="rank-number ${isBest ? "best" : ""}">${rank}</span></td>
           <td class="model-cell">
             <div class="model-line">
-              <span class="provider-mark ${providerClass(model.provider)}">${providerInitials(model.provider)}</span>
+              <span class="provider-mark ${providerClass(model.provider)}">${providerLogo(model.provider)}</span>
               <div>
                 <div class="model-name">${model.name}${isUsed ? ' <span class="badge">Seu modelo</span>' : ""}${isBest ? ' <span class="best-badge">Menor custo</span>' : ""}</div>
                 <div class="model-provider">${model.provider}${model.note ? ` · ${model.note}` : ""}</div>
@@ -415,6 +442,7 @@ function showPricingDate() {
 
 populateModelSelect();
 populateProviderFilter();
+initializeTheme();
 loadPrefs();
 syncTotalFromDetailed();
 setUsageMode(usageMode, { synchronize: false, renderNow: false });
@@ -445,6 +473,10 @@ els.rate.addEventListener("input", () => {
 });
 els.refreshRate.addEventListener("click", () => refreshExchangeRate({ force: true }));
 els.presetBtn.addEventListener("click", loadPreset);
+els.themeToggle.addEventListener("click", () => {
+  const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  applyTheme(nextTheme);
+});
 
 for (const button of els.usageModeButtons) {
   button.addEventListener("click", () => setUsageMode(button.dataset.usageMode));

@@ -12,7 +12,9 @@ campo continua editável para simulações manuais.
 
 Para facilitar o preenchimento, a interface oferece dois modos: informar entrada e saída
 separadamente ou informar apenas o total e escolher uma estimativa de divisão. Também há
-atalhos de volume, perfis para chat/código/agentes e busca por modelo ou provedor.
+atalhos de volume, perfis para chat/código/agentes e busca por modelo ou provedor. O tema
+claro/escuro acompanha a preferência do sistema no primeiro acesso e depois salva a escolha do
+usuário no navegador.
 
 ## Como rodar
 
@@ -49,11 +51,15 @@ npm run check:sources
 ## Estrutura
 
 - `index.html` — estrutura da página
-- `style.css` — estilo (dark/light automático via `prefers-color-scheme`)
+- `style.css` — temas claro/escuro, responsividade e animações acessíveis
+- `assets/logos/` — ícones locais dos provedores exibidos apenas para identificação
 - `pricing.js` — **tabela de preços** de cada modelo (US$ por 1M tokens de input/output)
 - `calculator.js` — parser e funções puras de cálculo, compartilhadas pelo site e pelos testes
 - `app.js` — lógica de cálculo e renderização
 - `tests/` — testes automatizados sem dependências externas
+
+Os ícones de marcas foram obtidos do projeto [Simple Icons](https://simpleicons.org/). As marcas
+e logos pertencem aos respectivos proprietários e não indicam parceria ou endosso.
 
 ## Atualizando os preços
 
