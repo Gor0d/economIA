@@ -867,7 +867,7 @@ input[type="range"] {
   font-size: 0.65rem;
 }
 
-.summary-footnote span {
+.summary-footnote span:first-child {
   display: grid;
   width: 18px;
   height: 18px;
@@ -876,6 +876,11 @@ input[type="range"] {
   border: 1px solid var(--border);
   border-radius: 50%;
   font-size: 0.62rem;
+}
+
+.summary-footnote span:last-child {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .empty-state,
@@ -910,7 +915,7 @@ input[type="range"] {
 
 .results-toolbar {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) 210px;
+  grid-template-columns: minmax(220px, 1fr) 240px;
   gap: 10px;
   margin: 20px 0 12px;
 }
