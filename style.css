@@ -216,19 +216,27 @@ a:focus-visible {
 }
 
 .brand-mark {
-  display: grid;
   width: 34px;
   height: 34px;
-  place-items: center;
-  border: 1px solid rgba(141, 164, 255, 0.46);
-  border-radius: 10px;
-  background: linear-gradient(145deg, rgba(109, 140, 255, 0.25), rgba(68, 215, 232, 0.08));
-  box-shadow: inset 0 1px rgba(255, 255, 255, 0.15);
-  color: #b6c5ff;
+  flex: 0 0 auto;
+  filter: drop-shadow(0 6px 14px rgba(68, 215, 232, 0.12));
+  transition: transform 180ms ease, filter 180ms ease;
 }
 
-.brand-dot {
-  color: var(--cyan);
+.brand:hover .brand-mark {
+  transform: rotate(-3deg) scale(1.05);
+  filter: drop-shadow(0 8px 17px rgba(68, 215, 232, 0.22));
+}
+
+.brand-word {
+  letter-spacing: -0.035em;
+}
+
+.brand-ia {
+  background: linear-gradient(100deg, var(--accent-bright), var(--cyan));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
 }
 
 .data-status {

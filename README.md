@@ -1,4 +1,4 @@
-# Calculadora de Custo de Tokens de IA
+# EconomIA — Calculadora de Custo de Tokens de IA
 
 Site estático (HTML/CSS/JS puro, sem build e sem backend) para comparar quanto você gastou
 com um modelo de IA vs. quanto teria gasto com outro. Você informa tokens de entrada/saída
@@ -53,6 +53,7 @@ npm run check:sources
 - `index.html` — estrutura da página
 - `style.css` — temas claro/escuro, responsividade e animações acessíveis
 - `assets/logos/` — ícones locais dos provedores exibidos apenas para identificação
+- `assets/brand/` — símbolo e assinaturas horizontais da marca EconomIA para fundos claros e escuros
 - `pricing.js` — **tabela de preços** de cada modelo (US$ por 1M tokens de input/output)
 - `calculator.js` — parser e funções puras de cálculo, compartilhadas pelo site e pelos testes
 - `app.js` — lógica de cálculo e renderização
