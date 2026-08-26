@@ -76,8 +76,18 @@
     }).format(value);
   }
 
-  function calcCost(model, inputTokens, outputTokens) {
-    return (inputTokens / 1e6) * model.input + (outputTokens / 1e6) * model.output;
+  function hasBatchDiscount(model) {
+    return typeof model.batchDiscount === "number" && model.batchDiscount > 0;
+  }
+
+  function effectiveRates(model, { batch = false } = {}) {
+    const multiplier = batch && hasBatchDiscount(model) ? 1 - model.batchDiscount : 1;
+    return { input: model.input * multiplier, output: model.output * multiplier };
+  }
+
+  function calcCost(model, inputTokens, outputTokens, options = {}) {
+    const rates = effectiveRates(model, options);
+    return (inputTokens / 1e6) * rates.input + (outputTokens / 1e6) * rates.output;
   }
 
   function isValidExchangeRate(value) {
@@ -99,8 +109,10 @@
 
   return {
     calcCost,
+    effectiveRates,
     formatMoney,
     formatNumber,
+    hasBatchDiscount,
     isValidExchangeRate,
     MAX_TOKENS_PER_FIELD,
     parseTokenValue,

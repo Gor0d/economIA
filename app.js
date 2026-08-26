@@ -10,6 +10,8 @@ const els = {
   usageModeButtons: [...document.querySelectorAll("[data-usage-mode]")],
   ratioPresetButtons: [...document.querySelectorAll("[data-output-share]")],
   volumeButtons: [...document.querySelectorAll("[data-token-total]")],
+  pricingModeButtons: [...document.querySelectorAll("[data-pricing-mode]")],
+  summaryFootnoteText: document.getElementById("summaryFootnoteText"),
   modelUsed: document.getElementById("modelUsed"),
   modelSearch: document.getElementById("modelSearch"),
   providerFilter: document.getElementById("providerFilter"),
@@ -32,8 +34,10 @@ const els = {
 
 const {
   calcCost,
+  effectiveRates,
   formatMoney,
   formatNumber,
+  hasBatchDiscount,
   isValidExchangeRate,
   MAX_TOKENS_PER_FIELD,
   parseTokenValue,
@@ -47,6 +51,7 @@ const RATE_CACHE_TTL_MS = 12 * 60 * 60 * 1000;
 const EXCHANGE_RATE_URL = "https://api.frankfurter.dev/v2/rate/USD/BRL";
 
 let usageMode = "detailed";
+let pricingMode = "standard";
 
 const PROVIDER_LOGOS = {
   OpenAI: "assets/logos/openai.svg",
@@ -55,6 +60,8 @@ const PROVIDER_LOGOS = {
   DeepSeek: "assets/logos/deepseek.svg",
   xAI: "assets/logos/xai.svg",
   Mistral: "assets/logos/mistral.svg",
+  "Moonshot AI": "assets/logos/moonshotai.svg",
+  "Z.ai": "assets/logos/zdotai.svg",
 };
 
 function applyTheme(theme, { persist = true } = {}) {
@@ -118,6 +125,7 @@ function loadPrefs() {
     if (prefs.outputTokens) els.outputTokens.value = prefs.outputTokens;
     if (prefs.outputShare) els.outputShare.value = prefs.outputShare;
     if (prefs.usageMode === "total" || prefs.usageMode === "detailed") usageMode = prefs.usageMode;
+    if (prefs.pricingMode === "batch" || prefs.pricingMode === "standard") pricingMode = prefs.pricingMode;
   } catch {
     // Preferências corrompidas não impedem o uso da calculadora.
   }
@@ -135,6 +143,7 @@ function savePrefs() {
         outputTokens: els.outputTokens.value,
         outputShare: els.outputShare.value,
         usageMode,
+        pricingMode,
       })
     );
   } catch {
@@ -271,6 +280,16 @@ function setUsageMode(mode, { synchronize = true, renderNow = true } = {}) {
   if (renderNow) render();
 }
 
+function setPricingMode(mode, { renderNow = true } = {}) {
+  pricingMode = mode === "batch" ? "batch" : "standard";
+  for (const button of els.pricingModeButtons) {
+    const active = button.dataset.pricingMode === pricingMode;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", String(active));
+  }
+  if (renderNow) render();
+}
+
 function applyQuickVolume(total) {
   if (usageMode === "detailed") syncTotalFromDetailed();
   els.totalTokens.value = String(total);
@@ -339,7 +358,7 @@ function renderSummary({ usedModel, usedCost, rows, inputTokens, outputTokens, c
     </div>`;
 }
 
-function renderRows(rows, { usedModel, usedCost, currency, toDisplay }) {
+function renderRows(rows, { usedModel, usedCost, currency, toDisplay, batch }) {
   const query = normalizeSearch(els.modelSearch.value);
   const provider = els.providerFilter.value;
   const filteredRows = rows.filter(({ model }) => {
@@ -365,6 +384,13 @@ function renderRows(rows, { usedModel, usedCost, currency, toDisplay }) {
         diffLabel = `↑ Custa ${formatMoney(toDisplay(diff), currency)} a mais · ${diffPct.toFixed(0)}%`;
       }
 
+      const rates = effectiveRates(model, { batch });
+      const batchNote = batch
+        ? hasBatchDiscount(model)
+          ? " · Batch aplicado"
+          : " · Sem Batch API (preço padrão)"
+        : "";
+
       return `
         <tr class="${isUsed ? "row-used" : ""}" style="--row-delay: ${Math.min(rank, 12) * 24}ms">
           <td class="rank-cell"><span class="rank-number ${isBest ? "best" : ""}">${rank}</span></td>
@@ -373,12 +399,12 @@ function renderRows(rows, { usedModel, usedCost, currency, toDisplay }) {
               <span class="provider-mark ${providerClass(model.provider)}">${providerLogo(model.provider)}</span>
               <div>
                 <div class="model-name">${model.name}${isUsed ? ' <span class="badge">Seu modelo</span>' : ""}${isBest ? ' <span class="best-badge">Menor custo</span>' : ""}</div>
-                <div class="model-provider">${model.provider}${model.note ? ` · ${model.note}` : ""}</div>
+                <div class="model-provider">${model.provider}${model.note ? ` · ${model.note}` : ""}${batchNote}</div>
               </div>
             </div>
           </td>
           <td class="rate-cell">
-            <strong>US$ ${formatUnitPrice(model.input)} / ${formatUnitPrice(model.output)}</strong>
+            <strong>US$ ${formatUnitPrice(rates.input)} / ${formatUnitPrice(rates.output)}</strong>
             <div class="price-detail">entrada / saída</div>
           </td>
           <td class="cost-cell">${formatMoney(toDisplay(cost), currency)}</td>
@@ -416,9 +442,10 @@ function render() {
   }
 
   els.emptyState.hidden = true;
-  const usedCost = calcCost(usedModel, inputTokens, outputTokens);
+  const batch = pricingMode === "batch";
+  const usedCost = calcCost(usedModel, inputTokens, outputTokens, { batch });
   const rows = PRICING.map((model) => {
-    const cost = calcCost(model, inputTokens, outputTokens);
+    const cost = calcCost(model, inputTokens, outputTokens, { batch });
     const diff = cost - usedCost;
     const diffPct = usedCost > 0 ? (diff / usedCost) * 100 : 0;
     return { model, cost, diff, diffPct };
@@ -427,7 +454,16 @@ function render() {
     .map((row, index) => ({ ...row, rank: index + 1 }));
 
   renderSummary({ usedModel, usedCost, rows, inputTokens, outputTokens, currency, toDisplay });
-  renderRows(rows, { usedModel, usedCost, currency, toDisplay });
+  renderRows(rows, { usedModel, usedCost, currency, toDisplay, batch });
+
+  if (batch && !hasBatchDiscount(usedModel)) {
+    els.summaryFootnoteText.textContent = `${usedModel.name} não publica desconto de Batch API — o custo acima usa o preço padrão. O modo Batch só reduz o preço dos modelos com essa opção documentada.`;
+  } else if (batch) {
+    els.summaryFootnoteText.textContent = "Estimativa com desconto de Batch API aplicado nos modelos que o publicam; demais seguem o preço padrão. Sem cache ou contexto longo.";
+  } else {
+    els.summaryFootnoteText.textContent = "Estimativa padrão, sem cache ou contexto longo.";
+  }
+
   savePrefs();
 }
 
@@ -457,6 +493,7 @@ initializeTheme();
 loadPrefs();
 syncTotalFromDetailed();
 setUsageMode(usageMode, { synchronize: false, renderNow: false });
+setPricingMode(pricingMode, { renderNow: false });
 
 els.inputTokens.addEventListener("input", () => {
   syncTotalFromDetailed();
@@ -501,6 +538,9 @@ for (const button of els.ratioPresetButtons) {
 }
 for (const button of els.volumeButtons) {
   button.addEventListener("click", () => applyQuickVolume(Number(button.dataset.tokenTotal)));
+}
+for (const button of els.pricingModeButtons) {
+  button.addEventListener("click", () => setPricingMode(button.dataset.pricingMode));
 }
 
 showPricingDate();

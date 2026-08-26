@@ -33,9 +33,9 @@
     </nav>
 
     <header id="top" class="hero">
-      <div class="eyebrow"><span>30 modelos</span><span>6 provedores</span><span>Câmbio automático</span></div>
+      <div class="eyebrow"><span>33 modelos</span><span>8 provedores</span><span>Câmbio automático</span></div>
       <h1>Descubra quanto sua IA <span>realmente custa.</span></h1>
-      <p>Informe seu consumo uma vez. Compare OpenAI, Anthropic, Google, DeepSeek, xAI e Mistral lado a lado.</p>
+      <p>Informe seu consumo uma vez. Compare OpenAI, Anthropic, Google, DeepSeek, xAI, Mistral, Moonshot AI e Z.ai lado a lado.</p>
       <div class="provider-cloud" aria-label="Provedores comparados">
         <span class="provider-chip"><img src="assets/logos/openai.svg" alt="" />OpenAI</span>
         <span class="provider-chip"><img src="assets/logos/anthropic.svg" alt="" />Anthropic</span>
@@ -43,6 +43,8 @@
         <span class="provider-chip"><img src="assets/logos/deepseek.svg" alt="" />DeepSeek</span>
         <span class="provider-chip"><img src="assets/logos/xai.svg" alt="" />xAI</span>
         <span class="provider-chip"><img src="assets/logos/mistral.svg" alt="" />Mistral</span>
+        <span class="provider-chip"><img src="assets/logos/moonshotai.svg" alt="" />Moonshot AI</span>
+        <span class="provider-chip"><img src="assets/logos/zdotai.svg" alt="" />Z.ai</span>
       </div>
     </header>
 
@@ -127,6 +129,14 @@
           <select id="modelUsed"></select>
         </div>
 
+        <div class="quick-volumes" aria-label="Modo de cobrança">
+          <span>Modo de cobrança</span>
+          <div role="group" aria-label="Modo de cobrança">
+            <button type="button" data-pricing-mode="standard" class="is-active" aria-pressed="true">Padrão</button>
+            <button type="button" data-pricing-mode="batch" aria-pressed="false" title="Aplica ~50% de desconto nos modelos com Batch API pública; sem resposta em tempo real">Batch API · −50%</button>
+          </div>
+        </div>
+
         <div class="config-footer">
           <button id="presetBtn" class="ghost-button" type="button" title="Preenche o caso de 382M tokens no DeepSeek">
             <span aria-hidden="true">✦</span> Usar exemplo de 382M tokens
@@ -155,9 +165,9 @@
       <aside class="summary-panel" aria-label="Resumo da estimativa">
         <div id="usedSummary" hidden></div>
         <div id="emptyState" class="empty-state" hidden></div>
-        <div class="summary-footnote">
+        <div id="summaryFootnote" class="summary-footnote">
           <span aria-hidden="true">i</span>
-          Estimativa padrão, sem cache, batch ou contexto longo.
+          <span id="summaryFootnoteText">Estimativa padrão, sem cache ou contexto longo.</span>
         </div>
       </aside>
     </section>
@@ -169,7 +179,7 @@
           <h2 id="resultsTitle">Ranking de custo</h2>
           <p>Do modelo mais econômico ao mais caro para o mesmo volume.</p>
         </div>
-        <span id="resultCount" class="result-count">30 modelos</span>
+        <span id="resultCount" class="result-count">33 modelos</span>
       </div>
 
       <div class="results-toolbar">
@@ -205,7 +215,7 @@
       <summary>Como chegamos a esta estimativa?</summary>
       <div>
         <p>Multiplicamos seus tokens de entrada e saída pelos preços públicos de cada provedor. A comparação mantém o mesmo volume em todos os modelos; tokenizadores diferentes podem alterar o consumo real.</p>
-        <p>Não incluímos descontos de cache, batch, volume ou tarifas especiais para contexto longo.</p>
+        <p>O modo Batch aplica o desconto oficial (~50%) só nos modelos cuja Batch API é documentada publicamente pelo provedor (OpenAI, Anthropic e Google); os demais mantêm o preço padrão nesse modo. Ainda não incluímos desconto de cache, de volume, nem tarifas especiais para contexto longo.</p>
       </div>
     </details>
 
@@ -221,7 +231,9 @@
         <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noopener noreferrer">Google</a> ·
         <a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener noreferrer">DeepSeek</a> ·
         <a href="https://docs.x.ai/developers/pricing" target="_blank" rel="noopener noreferrer">xAI</a> ·
-        <a href="https://mistral.ai/pricing/api/" target="_blank" rel="noopener noreferrer">Mistral</a>
+        <a href="https://mistral.ai/pricing/api/" target="_blank" rel="noopener noreferrer">Mistral</a> ·
+        <a href="https://platform.kimi.ai/docs/pricing/chat-k3" target="_blank" rel="noopener noreferrer">Moonshot AI</a> ·
+        <a href="https://docs.z.ai/guides/overview/pricing" target="_blank" rel="noopener noreferrer">Z.ai</a>
         <small>As marcas e logos pertencem aos respectivos proprietários e são usadas apenas para identificação.</small>
       </p>
     </footer>

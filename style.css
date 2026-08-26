@@ -599,6 +599,12 @@ input[type="range"] {
   color: var(--text);
 }
 
+.quick-volumes button.is-active {
+  border-color: rgba(109, 140, 255, 0.6);
+  background: rgba(109, 140, 255, 0.18);
+  color: var(--text);
+}
+
 #splitHint {
   margin: 9px 0 0;
   color: var(--text-dim);

@@ -11,6 +11,12 @@ test("tabela possui modelos válidos e IDs únicos", () => {
     assert.ok(model.id && model.provider && model.name, JSON.stringify(model));
     assert.ok(Number.isFinite(model.input) && model.input >= 0, model.id);
     assert.ok(Number.isFinite(model.output) && model.output >= 0, model.id);
+    if (model.batchDiscount !== undefined) {
+      assert.ok(
+        Number.isFinite(model.batchDiscount) && model.batchDiscount > 0 && model.batchDiscount < 1,
+        `batchDiscount inválido em ${model.id}`
+      );
+    }
     assert.equal(ids.has(model.id), false, `ID duplicado: ${model.id}`);
     ids.add(model.id);
   }

@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 const {
   calcCost,
   formatMoney,
+  hasBatchDiscount,
   isValidExchangeRate,
   parseTokenValue,
   splitTokenTotal,
@@ -34,6 +35,20 @@ test("rejeita entradas ambíguas ou inválidas", () => {
 test("calcula o preset do DeepSeek com os preços oficiais atuais", () => {
   const model = { input: 0.14, output: 0.28 };
   assert.equal(calcCost(model, 267_400_000, 114_600_000), 69.524);
+});
+
+test("aplica o desconto de Batch API só quando o modelo tem esse desconto", () => {
+  const withBatch = { input: 10, output: 10, batchDiscount: 0.5 };
+  const withoutBatch = { input: 10, output: 10 };
+
+  assert.equal(hasBatchDiscount(withBatch), true);
+  assert.equal(hasBatchDiscount(withoutBatch), false);
+
+  assert.equal(calcCost(withBatch, 1_000_000, 1_000_000, { batch: true }), 10);
+  assert.equal(calcCost(withBatch, 1_000_000, 1_000_000, { batch: false }), 20);
+  assert.equal(calcCost(withBatch, 1_000_000, 1_000_000), 20);
+  // Sem batchDiscount, pedir batch não muda o preço.
+  assert.equal(calcCost(withoutBatch, 1_000_000, 1_000_000, { batch: true }), 20);
 });
 
 test("valida câmbio estritamente positivo", () => {

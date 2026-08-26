@@ -3,6 +3,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
+const { PRICING } = require("../pricing.js");
 
 function createElement(id = "", dataset = {}) {
   const classes = new Set();
@@ -68,6 +69,7 @@ function createAppContext() {
     "pricingDateTop",
     "themeToggle",
     "themeColor",
+    "summaryFootnoteText",
   ];
   const elements = Object.fromEntries(ids.map((id) => [id, createElement(id)]));
   elements.inputTokens.value = "1000000";
@@ -91,6 +93,10 @@ function createAppContext() {
   const volumeButtons = [
     createElement("", { tokenTotal: "100000" }),
     createElement("", { tokenTotal: "1000000" }),
+  ];
+  const pricingModeButtons = [
+    createElement("", { pricingMode: "standard" }),
+    createElement("", { pricingMode: "batch" }),
   ];
 
   const storage = new Map();
@@ -119,6 +125,7 @@ function createAppContext() {
         if (selector === "[data-usage-mode]") return usageModeButtons;
         if (selector === "[data-output-share]") return ratioPresetButtons;
         if (selector === "[data-token-total]") return volumeButtons;
+        if (selector === "[data-pricing-mode]") return pricingModeButtons;
         return [];
       },
     },
@@ -131,14 +138,14 @@ function createAppContext() {
     vm.runInContext(source, context, { filename: file });
   }
 
-  return { elements, usageModeButtons, ratioPresetButtons, volumeButtons };
+  return { elements, usageModeButtons, ratioPresetButtons, volumeButtons, pricingModeButtons };
 }
 
 test("interface renderiza, atualiza câmbio e executa o preset", async () => {
   const { elements, usageModeButtons } = createAppContext();
   await new Promise((resolve) => setImmediate(resolve));
 
-  assert.equal((elements.results.innerHTML.match(/<tr/g) || []).length, 30);
+  assert.equal((elements.results.innerHTML.match(/<tr/g) || []).length, PRICING.length);
   assert.match(elements.usedSummary.innerHTML, /\$20\.00/);
   assert.equal(elements.rateWrap.hidden, true);
   assert.equal(elements.rate.value, "5.1526");
@@ -191,6 +198,31 @@ test("recusa volumes acima do teto por campo com mensagem clara", async () => {
   assert.match(elements.emptyState.textContent, /1 trilhão/);
   assert.equal(elements.usedSummary.hidden, true);
   assert.equal((elements.results.innerHTML.match(/<tr/g) || []).length, 0);
+});
+
+test("modo Batch reduz custo só nos modelos com desconto documentado", async () => {
+  const { elements, pricingModeButtons } = createAppContext();
+  await new Promise((resolve) => setImmediate(resolve));
+
+  // Claude Haiku 4.5 (Anthropic) publica Batch API com 50% off.
+  elements.modelUsed.value = "claude-haiku-4-5";
+  elements.modelUsed.listeners.input();
+  assert.match(elements.usedSummary.innerHTML, /\$2\.00/);
+
+  pricingModeButtons[1].listeners.click();
+  assert.equal(pricingModeButtons[1].attributes["aria-pressed"], "true");
+  assert.match(elements.usedSummary.innerHTML, /\$1\.00/);
+  assert.match(elements.summaryFootnoteText.textContent, /Batch/);
+
+  // GLM-4.6 (Z.ai) não publica desconto de Batch — preço não deve mudar.
+  elements.modelUsed.value = "glm-4.6";
+  elements.modelUsed.listeners.input();
+  assert.match(elements.usedSummary.innerHTML, /\$1\.04/);
+  assert.match(elements.summaryFootnoteText.textContent, /não publica desconto de Batch/);
+
+  pricingModeButtons[0].listeners.click();
+  assert.equal(pricingModeButtons[0].attributes["aria-pressed"], "true");
+  assert.match(elements.summaryFootnoteText.textContent, /^Estimativa padrão/);
 });
 
 test("busca reduz o ranking sem alterar o cálculo principal", async () => {
