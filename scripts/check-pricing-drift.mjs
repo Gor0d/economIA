@@ -40,9 +40,16 @@ function extractVisibleText(html) {
 
 // Só os valores em dólar (ex: "$3.00", "$0.10") — ignora o resto do texto da
 // página, que é o que costuma variar sem relação nenhuma com preço.
-function extractPriceSignal(text) {
-  const matches = text.match(/\$\s?\d[\d,.]*/g) || [];
-  return [...new Set(matches.map((m) => m.replace(/\s+/g, "").toLowerCase()))].sort();
+//
+// Algumas páginas (ex: Moonshot AI/Kimi, um app Next.js) não têm "$3.00" como
+// texto contíguo no HTML — o preço vem serializado do React em pedaços
+// separados, tipo `` `$`,`3.00` `` dentro de um <script>. Casamos esse padrão
+// também, direto no HTML bruto (antes de remover as tags).
+function extractPriceSignal(html, visibleText) {
+  const plainMatches = visibleText.match(/\$\s?\d[\d,.]*/g) || [];
+  const rscMatches = [...html.matchAll(/`\$`\s*,\s*`([\d.,]+)`/g)].map((m) => `$${m[1]}`);
+  const all = [...plainMatches, ...rscMatches];
+  return [...new Set(all.map((m) => m.replace(/\s+/g, "").toLowerCase()))].sort();
 }
 
 function hashSignal(signal) {
@@ -59,7 +66,8 @@ async function fetchPriceSignal(url) {
     signal: AbortSignal.timeout(15_000),
   });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  return extractPriceSignal(extractVisibleText(await response.text()));
+  const html = await response.text();
+  return extractPriceSignal(html, extractVisibleText(html));
 }
 
 function sleep(ms) {

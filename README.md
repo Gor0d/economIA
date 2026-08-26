@@ -58,10 +58,14 @@ Duas camadas, as duas gratuitas:
      falso todo dia. A solução foi extrair só os valores em dólar do texto visível — e ainda
      assim buscar cada página duas vezes com um intervalo curto, só confiando no resultado se
      as duas baterem (algumas páginas servem uma variação diferente por requisição).
-   - Uma limitação conhecida: a página da **Moonshot AI (Kimi)** parece renderizar os preços
-     via JavaScript no navegador — uma busca simples de servidor não vê esse conteúdo, então
-     ela não é monitorada automaticamente por esse mecanismo (fica exposta em
-     `scripts/pricing-drift-result.json` → `notMonitored` a cada execução).
+   - A página da **Moonshot AI (Kimi)** é um app Next.js: o preço não aparece como texto
+     contíguo (`$3.00`) no HTML — vem serializado do React em pedaços separados
+     (`` `$`,`3.00` ``) dentro de um `<script>`. O extrator reconhece também esse formato,
+     então ela é monitorada normalmente. Se no futuro outro provedor usar uma técnica
+     diferente (ex.: preço só disponível depois de executar JS no navegador, sem nenhum
+     rastro no HTML bruto), ele aparece em `notMonitored` no resultado — sinal de que
+     precisaria de um navegador headless (Playwright) no workflow, opção descartada por
+     enquanto pelo custo/tempo extra que adicionaria ao job diário.
 
 Rodar manualmente:
 
