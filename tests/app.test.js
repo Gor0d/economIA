@@ -180,6 +180,19 @@ test("interface renderiza, atualiza câmbio e executa o preset", async () => {
   assert.match(elements.emptyState.textContent, /maior que zero/);
 });
 
+test("recusa volumes acima do teto por campo com mensagem clara", async () => {
+  const { elements } = createAppContext();
+  await new Promise((resolve) => setImmediate(resolve));
+
+  elements.inputTokens.value = "382000000000000000000";
+  elements.inputTokens.listeners.input();
+
+  assert.equal(elements.emptyState.hidden, false);
+  assert.match(elements.emptyState.textContent, /1 trilhão/);
+  assert.equal(elements.usedSummary.hidden, true);
+  assert.equal((elements.results.innerHTML.match(/<tr/g) || []).length, 0);
+});
+
 test("busca reduz o ranking sem alterar o cálculo principal", async () => {
   const { elements } = createAppContext();
   await new Promise((resolve) => setImmediate(resolve));

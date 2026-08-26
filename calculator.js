@@ -81,6 +81,8 @@
     return Number.isFinite(value) && value > 0;
   }
 
+  const MAX_TOKENS_PER_FIELD = 1e12; // 1 trilhão — acima disso a precisão de ponto flutuante já não é confiável
+
   function splitTokenTotal(totalTokens, outputSharePercent) {
     const total = Number(totalTokens);
     const share = Number(outputSharePercent);
@@ -97,6 +99,7 @@
     formatMoney,
     formatNumber,
     isValidExchangeRate,
+    MAX_TOKENS_PER_FIELD,
     parseTokenValue,
     splitTokenTotal,
   };

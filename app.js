@@ -35,6 +35,7 @@ const {
   formatMoney,
   formatNumber,
   isValidExchangeRate,
+  MAX_TOKENS_PER_FIELD,
   parseTokenValue,
   splitTokenTotal,
 } = CalculatorCore;
@@ -399,6 +400,13 @@ function render() {
 
   if (!usedModel || Number.isNaN(inputTokens) || Number.isNaN(outputTokens) || inputTokens < 0 || outputTokens < 0) {
     setEmptyState("Revise os tokens informados. Você pode usar 1.000.000, 267,4M ou 1.2B.");
+    return;
+  }
+
+  if (inputTokens > MAX_TOKENS_PER_FIELD || outputTokens > MAX_TOKENS_PER_FIELD) {
+    setEmptyState(
+      `O máximo por campo é ${formatNumber(MAX_TOKENS_PER_FIELD)} tokens (1 trilhão) — acima disso o cálculo perde precisão. Divida por período ou projeto e some os resultados.`
+    );
     return;
   }
 
