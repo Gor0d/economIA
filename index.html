@@ -6,17 +6,7 @@
   <meta name="description" content="Compare o custo de tokens entre os principais modelos de IA, em dólar ou real." />
   <meta id="themeColor" name="theme-color" content="#07111f" />
   <title>EconomIA / Compare custos de modelos de IA</title>
-  <script>
-    (() => {
-      try {
-        const savedTheme = localStorage.getItem("tokens-custo-theme");
-        const systemTheme = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
-        document.documentElement.dataset.theme = savedTheme || systemTheme;
-      } catch {
-        document.documentElement.dataset.theme = "dark";
-      }
-    })();
-  </script>
+  <script src="theme-init.js"></script>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="style.css" />
 </head>
