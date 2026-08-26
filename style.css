@@ -757,12 +757,25 @@ input[type="range"] {
 }
 
 .used-value {
+  max-width: 100%;
   margin: 0;
   font-size: clamp(2.8rem, 5vw, 4.25rem);
+  font-variant-numeric: tabular-nums;
   font-weight: 760;
   letter-spacing: -0.065em;
   line-height: 1;
+  white-space: nowrap;
   animation: value-pop 320ms cubic-bezier(.22, .8, .28, 1) both;
+}
+
+.used-value.is-long {
+  font-size: clamp(2.45rem, 4vw, 3.35rem);
+  letter-spacing: -0.055em;
+}
+
+.used-value.is-extra-long {
+  font-size: clamp(2.1rem, 3.35vw, 2.8rem);
+  letter-spacing: -0.045em;
 }
 
 .used-meta {

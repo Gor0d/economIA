@@ -299,6 +299,9 @@ function renderSummary({ usedModel, usedCost, rows, inputTokens, outputTokens, c
   const savings = cheapestAlternative ? usedCost - cheapestAlternative.cost : 0;
   const savingsPct = usedCost > 0 && savings > 0 ? (savings / usedCost) * 100 : 0;
   const totalTokens = inputTokens + outputTokens;
+  const displayCost = formatMoney(toDisplay(usedCost), currency);
+  const costLength = displayCost.replace(/\s/g, "").length;
+  const costSizeClass = costLength >= 15 ? "is-extra-long" : costLength >= 11 ? "is-long" : "";
 
   let bestOption;
   if (cheapestAlternative && savings > 0) {
@@ -322,7 +325,7 @@ function renderSummary({ usedModel, usedCost, rows, inputTokens, outputTokens, c
     <div class="summary-primary">
       <div class="used-label">Seu custo estimado</div>
       <div class="used-model">${usedModel.name}</div>
-      <div class="used-value">${formatMoney(toDisplay(usedCost), currency)}</div>
+      <div class="used-value ${costSizeClass}">${displayCost}</div>
       <div class="used-meta">${formatNumber(inputTokens)} entrada + ${formatNumber(outputTokens)} saída</div>
     </div>
     <div class="summary-insights">

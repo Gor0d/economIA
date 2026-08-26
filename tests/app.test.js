@@ -168,6 +168,12 @@ test("interface renderiza, atualiza câmbio e executa o preset", async () => {
   assert.equal(elements.rateWrap.hidden, false);
   assert.match(elements.usedSummary.innerHTML, /R\$/);
 
+  elements.modelUsed.value = "gpt-5.6-sol";
+  elements.inputTokens.value = "267400000";
+  elements.outputTokens.value = "114600000";
+  elements.inputTokens.listeners.input();
+  assert.match(elements.usedSummary.innerHTML, /used-value is-long/);
+
   elements.rate.value = "-2";
   elements.rate.listeners.input();
   assert.equal(elements.emptyState.hidden, false);
