@@ -497,6 +497,11 @@ a:focus-visible {
   pointer-events: none;
 }
 
+.input-shell input[aria-invalid="true"] {
+  border-color: #e45b6a;
+  box-shadow: 0 0 0 3px rgb(228 91 106 / 14%);
+}
+
 input,
 select {
   width: 100%;

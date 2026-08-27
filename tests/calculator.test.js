@@ -18,6 +18,7 @@ test("interpreta formatos brasileiros e internacionais de tokens", () => {
     ["267,4M", 267_400_000],
     ["267.4M", 267_400_000],
     ["1,2B", 1_200_000_000],
+    ["1T", 1_000_000_000_000],
     ["900k", 900_000],
   ]);
 

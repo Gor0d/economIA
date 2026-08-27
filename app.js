@@ -39,7 +39,7 @@ const {
   formatNumber,
   hasBatchDiscount,
   isValidExchangeRate,
-  MAX_TOKENS_PER_FIELD,
+  MAX_TOKENS_PER_SCENARIO,
   parseTokenValue,
   splitTokenTotal,
 } = CalculatorCore;
@@ -423,15 +423,31 @@ function render() {
   const toDisplay = (usd) => (currency === "BRL" ? usd * rate : usd);
 
   els.rateWrap.hidden = currency !== "BRL";
+  els.inputTokens.setAttribute("aria-invalid", "false");
+  els.outputTokens.setAttribute("aria-invalid", "false");
+  els.totalTokens.setAttribute("aria-invalid", "false");
 
   if (!usedModel || Number.isNaN(inputTokens) || Number.isNaN(outputTokens) || inputTokens < 0 || outputTokens < 0) {
+    if (usageMode === "total") {
+      els.totalTokens.setAttribute("aria-invalid", "true");
+    } else {
+      els.inputTokens.setAttribute("aria-invalid", String(Number.isNaN(inputTokens) || inputTokens < 0));
+      els.outputTokens.setAttribute("aria-invalid", String(Number.isNaN(outputTokens) || outputTokens < 0));
+    }
     setEmptyState("Revise os tokens informados. Você pode usar 1.000.000, 267,4M ou 1.2B.");
     return;
   }
 
-  if (inputTokens > MAX_TOKENS_PER_FIELD || outputTokens > MAX_TOKENS_PER_FIELD) {
+  const totalTokens = inputTokens + outputTokens;
+  if (totalTokens > MAX_TOKENS_PER_SCENARIO) {
+    if (usageMode === "total") {
+      els.totalTokens.setAttribute("aria-invalid", "true");
+    } else {
+      els.inputTokens.setAttribute("aria-invalid", "true");
+      els.outputTokens.setAttribute("aria-invalid", "true");
+    }
     setEmptyState(
-      `O máximo por campo é ${formatNumber(MAX_TOKENS_PER_FIELD)} tokens (1 trilhão) — acima disso o cálculo perde precisão. Divida por período ou projeto e some os resultados.`
+      `O limite por cenário é ${formatNumber(MAX_TOKENS_PER_SCENARIO)} tokens (1 trilhão). Para volumes maiores, divida por período ou projeto.`
     );
     return;
   }
@@ -482,9 +498,13 @@ function showManualRateStatus() {
 }
 
 function showPricingDate() {
-  const date = formatRateDate(PRICING_META.updatedAt);
-  els.pricingDate.textContent = date;
-  els.pricingDateTop.textContent = date;
+  const reviewedDate = formatRateDate(PRICING_META.updatedAt);
+  const monitoredAt =
+    typeof PRICING_STATUS !== "undefined" && PRICING_STATUS.checkedAt
+      ? PRICING_STATUS.checkedAt
+      : PRICING_META.updatedAt;
+  els.pricingDate.textContent = reviewedDate;
+  els.pricingDateTop.textContent = formatRateDate(monitoredAt);
 }
 
 populateModelSelect();

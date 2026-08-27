@@ -4,6 +4,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
 const { PRICING } = require("../pricing.js");
+const { PRICING_STATUS } = require("../pricing-status.js");
 
 function createElement(id = "", dataset = {}) {
   const classes = new Set();
@@ -133,7 +134,7 @@ function createAppContext() {
     clearTimeout,
   });
 
-  for (const file of ["pricing.js", "calculator.js", "app.js"]) {
+  for (const file of ["pricing-status.js", "pricing.js", "calculator.js", "app.js"]) {
     const source = fs.readFileSync(path.join(__dirname, "..", file), "utf8");
     vm.runInContext(source, context, { filename: file });
   }
@@ -150,6 +151,8 @@ test("interface renderiza, atualiza câmbio e executa o preset", async () => {
   assert.equal(elements.rateWrap.hidden, true);
   assert.equal(elements.rate.value, "5.1526");
   assert.match(elements.rateStatus.textContent, /Automático/);
+  assert.equal(elements.pricingDateTop.textContent, PRICING_STATUS.checkedAt.split("-").reverse().join("/"));
+  assert.equal(elements.pricingDate.textContent, "26/08/2026");
 
   elements.themeToggle.listeners.click();
   assert.equal(elements.themeToggle.attributes["aria-label"], "Ativar modo escuro");
@@ -187,15 +190,18 @@ test("interface renderiza, atualiza câmbio e executa o preset", async () => {
   assert.match(elements.emptyState.textContent, /maior que zero/);
 });
 
-test("recusa volumes acima do teto por campo com mensagem clara", async () => {
+test("recusa volumes acima do teto por cenário com mensagem clara", async () => {
   const { elements } = createAppContext();
   await new Promise((resolve) => setImmediate(resolve));
 
-  elements.inputTokens.value = "382000000000000000000";
+  elements.inputTokens.value = "600B";
+  elements.outputTokens.value = "500B";
   elements.inputTokens.listeners.input();
 
   assert.equal(elements.emptyState.hidden, false);
   assert.match(elements.emptyState.textContent, /1 trilhão/);
+  assert.equal(elements.inputTokens.attributes["aria-invalid"], "true");
+  assert.equal(elements.outputTokens.attributes["aria-invalid"], "true");
   assert.equal(elements.usedSummary.hidden, true);
   assert.equal((elements.results.innerHTML.match(/<tr/g) || []).length, 0);
 });

@@ -15,8 +15,10 @@ const require = createRequire(import.meta.url);
 const { PRICING_META } = require("../pricing.js");
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT_DIR = path.resolve(__dirname, "..");
 const SNAPSHOT_PATH = path.join(__dirname, "pricing-snapshots.json");
 const RESULT_PATH = path.join(__dirname, "pricing-drift-result.json");
+const STATUS_PATH = path.join(ROOT_DIR, "pricing-status.js");
 
 function loadSnapshots() {
   if (!existsSync(SNAPSHOT_PATH)) return {};
@@ -111,6 +113,7 @@ const results = await Promise.all(
 const changed = [];
 const unreachable = [];
 const noSignal = [];
+const inconclusive = [];
 const next = { ...previous };
 
 for (const result of results) {
@@ -124,6 +127,7 @@ for (const result of results) {
   }
   if (result.status === "inconclusive") {
     // Mantém o snapshot anterior; tenta de novo na próxima execução.
+    inconclusive.push({ provider: result.provider, url: result.url });
     continue;
   }
 
@@ -144,8 +148,20 @@ const notMonitored = Object.keys(PRICING_META.sources)
   .filter((provider) => !(provider in next))
   .map((provider) => ({ provider, url: PRICING_META.sources[provider] }));
 
-const summary = { isFirstRun, changed, unreachable, noSignal, notMonitored };
+const summary = { isFirstRun, changed, unreachable, noSignal, inconclusive, notMonitored };
 writeFileSync(RESULT_PATH, JSON.stringify(summary, null, 2));
+
+const checkedAt = new Date().toISOString().slice(0, 10);
+const status =
+  changed.length > 0 || unreachable.length > 0
+    ? "attention"
+    : noSignal.length > 0 || inconclusive.length > 0 || notMonitored.length > 0
+      ? "partial"
+      : "ok";
+writeFileSync(
+  STATUS_PATH,
+  `const PRICING_STATUS = Object.freeze({\n  checkedAt: "${checkedAt}",\n  status: "${status}",\n});\n\nif (typeof module !== "undefined" && module.exports) {\n  module.exports = { PRICING_STATUS };\n}\n`
+);
 
 console.log(JSON.stringify(summary, null, 2));
 

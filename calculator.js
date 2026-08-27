@@ -44,7 +44,7 @@
     const compact = String(raw).trim().toLowerCase().replace(/\s/g, "");
     if (!compact) return NaN;
 
-    const match = compact.match(/^(\d[\d.,]*)(k|m|mm|b)?$/);
+    const match = compact.match(/^(\d[\d.,]*)(k|m|mm|b|t)?$/);
     if (!match) return NaN;
 
     const suffix = match[2];
@@ -52,7 +52,16 @@
     if (!normalized) return NaN;
 
     const number = Number(normalized);
-    const multiplier = suffix === "k" ? 1e3 : suffix === "m" || suffix === "mm" ? 1e6 : suffix === "b" ? 1e9 : 1;
+    const multiplier =
+      suffix === "k"
+        ? 1e3
+        : suffix === "m" || suffix === "mm"
+          ? 1e6
+          : suffix === "b"
+            ? 1e9
+            : suffix === "t"
+              ? 1e12
+              : 1;
     const result = number * multiplier;
 
     if (!Number.isFinite(result)) return NaN;
@@ -94,7 +103,9 @@
     return Number.isFinite(value) && value > 0;
   }
 
-  const MAX_TOKENS_PER_FIELD = 1e12; // 1 trilhão — acima disso a precisão de ponto flutuante já não é confiável
+  // Proteção de produto: mantém a estimativa legível e evita entradas acidentais
+  // muito acima dos volumes que a interface foi desenhada para comparar.
+  const MAX_TOKENS_PER_SCENARIO = 1e12;
 
   function splitTokenTotal(totalTokens, outputSharePercent) {
     const total = Number(totalTokens);
@@ -114,7 +125,7 @@
     formatNumber,
     hasBatchDiscount,
     isValidExchangeRate,
-    MAX_TOKENS_PER_FIELD,
+    MAX_TOKENS_PER_SCENARIO,
     parseTokenValue,
     splitTokenTotal,
   };

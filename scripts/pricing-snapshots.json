@@ -2,12 +2,12 @@
   "Anthropic": {
     "hash": "6caa40ff971d3a1b13f6ccf2bf0172795a627e2613d55d1a0c7063428c892233",
     "url": "https://platform.claude.com/docs/en/about-claude/pricing",
-    "checkedAt": "2026-08-26T20:35:23.100Z"
+    "checkedAt": "2026-08-27T12:12:04.447Z"
   },
   "OpenAI": {
     "hash": "e90275b567950d3736cfb418f1b5398363fcff4ac9d27b23c645a5eae3bc6044",
     "url": "https://developers.openai.com/api/docs/models",
-    "checkedAt": "2026-08-26T20:35:23.100Z"
+    "checkedAt": "2026-08-27T12:12:04.447Z"
   },
   "Google": {
     "hash": "b2e2781bd9c7c42e472ee90e83dd689c173b9f7d824b23f31accfcbc747307ec",
@@ -17,26 +17,26 @@
   "DeepSeek": {
     "hash": "580838d6898674c3a3d9f7c07486e784b5c9cb69de48d2048e17345528f04448",
     "url": "https://api-docs.deepseek.com/quick_start/pricing/",
-    "checkedAt": "2026-08-26T20:35:23.100Z"
+    "checkedAt": "2026-08-27T12:12:04.447Z"
   },
   "xAI": {
     "hash": "30293c841ec0d3eaba91490963dd57c4dfc2fb7d7431ef0f24d382e39ff52f36",
     "url": "https://docs.x.ai/developers/pricing",
-    "checkedAt": "2026-08-26T20:35:23.100Z"
+    "checkedAt": "2026-08-27T12:12:04.447Z"
   },
   "Mistral": {
     "hash": "5d7efe6bfbe25ae3b7f2becd35a48d61918edddbf1721e74258bb858c98065b1",
     "url": "https://mistral.ai/pricing/api/",
-    "checkedAt": "2026-08-26T20:35:23.100Z"
+    "checkedAt": "2026-08-27T12:12:04.447Z"
   },
   "Moonshot AI": {
     "hash": "a2d282b9647321dbfd1da007bddc634852bafc56e5f1f81cc268fd287a40b81a",
     "url": "https://platform.kimi.ai/docs/pricing/chat-k3",
-    "checkedAt": "2026-08-26T20:35:23.100Z"
+    "checkedAt": "2026-08-27T12:12:04.447Z"
   },
   "Z.ai": {
     "hash": "7328917170d1b825eab740ef83c3b10ef0cde1775c7935db25883fdc113b4674",
     "url": "https://docs.z.ai/guides/overview/pricing",
-    "checkedAt": "2026-08-26T20:35:23.100Z"
+    "checkedAt": "2026-08-27T12:12:04.447Z"
   }
 }

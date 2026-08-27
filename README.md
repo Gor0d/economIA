@@ -26,7 +26,7 @@ estáticos. Isso significa:
 - Não há chave de API, custo de servidor ou infraestrutura pra manter.
 - A única chamada de rede feita pelo navegador do usuário é para a API pública e gratuita do
   [Frankfurter](https://frankfurter.dev/) (câmbio USD→BRL) — o resto é tudo cálculo local.
-- Sem framework: os arquivos `pricing.js` → `calculator.js` → `app.js` são carregados na
+- Sem framework: os arquivos `pricing-status.js` → `pricing.js` → `calculator.js` → `app.js` são carregados na
   ordem, cada um assumindo que o anterior já rodou (ver `index.html`).
 
 O projeto foi construído em pareamento entre um humano (visão de produto, decisões de
@@ -53,6 +53,9 @@ Duas camadas, as duas gratuitas:
    página ficou inacessível — abre uma **Issue** no repositório pedindo revisão manual.
    Não usa IA nem chave de API paga: é puramente HTTP + diff de texto. Ele nunca edita
    `pricing.js` sozinho, só avisa.
+   A cada execução, ele atualiza `pricing-status.js`, que alimenta a data “Monitor executado
+   em” mostrada no topo. A data “Tabela revisada em” continua vindo de
+   `PRICING_META.updatedAt` e só muda depois de uma conferência humana dos valores.
    - Detalhe que exigiu ajuste: o HTML bruto dessas páginas muda a cada request (scripts de
      analytics, nonces, banners rotativos), então comparar a página inteira gerava alarme
      falso todo dia. A solução foi extrair só os valores em dólar do texto visível — e ainda
@@ -84,9 +87,9 @@ npm run check:drift     # compara com o retrato salvo e mostra o que mudou
 - **Câmbio USD→BRL automático**, com cache de 12h no navegador e opção de digitar um valor
   manual.
 - **Busca e filtro por provedor**, tema claro/escuro (acompanha o sistema, depois lembra a
-  escolha), e teto de 1 trilhão de tokens por campo (acima disso a precisão de ponto
-  flutuante do JavaScript deixa de ser confiável, e o site avisa em vez de mostrar um número
-  sem sentido).
+  escolha), atalhos de entrada até `1T` e teto de 1 trilhão de tokens por cenário. Acima
+  disso, o site orienta dividir o volume por período ou projeto para preservar uma comparação
+  legível e útil.
 
 ## Como rodar
 
@@ -125,6 +128,7 @@ X-Frame-Options etc.). Por ser uma pasta estática, também funciona em:
 - `assets/logos/` — ícones locais dos provedores exibidos apenas para identificação
 - `assets/brand/` — símbolo e assinaturas horizontais da marca EconomIA para fundos claros e escuros
 - `pricing.js` — **tabela de preços** de cada modelo (US$ por 1M tokens de input/output)
+- `pricing-status.js` — data da última execução do monitor, gerada pelo workflow diário
 - `calculator.js` — parser e funções puras de cálculo, compartilhadas pelo site e pelos testes
 - `app.js` — lógica de interface e renderização
 - `theme-init.js` — detecção de tema (script externo, exigido pela CSP sem `unsafe-inline`)
