@@ -31,6 +31,8 @@ const els = {
   modelCountBadge: document.getElementById("modelCountBadge"),
   providerCountBadge: document.getElementById("providerCountBadge"),
   otherProvidersCount: document.getElementById("otherProvidersCount"),
+  providerCloud: document.getElementById("providerCloud"),
+  sourceLinks: document.getElementById("sourceLinks"),
   themeToggle: document.getElementById("themeToggle"),
   themeColor: document.getElementById("themeColor"),
 };
@@ -66,6 +68,8 @@ const PROVIDER_LOGOS = {
   "Moonshot AI": "assets/logos/moonshotai.svg",
   "Z.ai": "assets/logos/zdotai.svg",
   Qwen: "assets/logos/qwen.svg",
+  MiniMax: "assets/logos/minimax.svg",
+  Perplexity: "assets/logos/perplexity.svg",
 };
 
 function applyTheme(theme, { persist = true } = {}) {
@@ -477,7 +481,7 @@ function render() {
   renderRows(rows, { usedModel, usedCost, currency, toDisplay, batch });
 
   if (batch && !hasBatchDiscount(usedModel)) {
-    els.summaryFootnoteText.textContent = `${usedModel.name} não publica desconto de Batch API — o custo acima usa o preço padrão. O modo Batch só reduz o preço dos modelos com essa opção documentada.`;
+    els.summaryFootnoteText.textContent = `${usedModel.name} não publica desconto de Batch API. O custo acima usa o preço padrão. O modo Batch só reduz o preço dos modelos com essa opção documentada.`;
   } else if (batch) {
     els.summaryFootnoteText.textContent = "Estimativa com desconto de Batch API aplicado nos modelos que o publicam; demais seguem o preço padrão. Sem cache ou contexto longo.";
   } else {
@@ -504,12 +508,26 @@ function showManualRateStatus() {
 const HERO_NAMED_PROVIDERS = ["OpenAI", "Anthropic", "Google"];
 
 function showCoverageStats() {
-  const providers = new Set(PRICING.map((model) => model.provider));
+  const providers = [...new Set(PRICING.map((model) => model.provider))];
   els.modelCountBadge.textContent = String(PRICING.length);
-  els.providerCountBadge.textContent = String(providers.size);
+  els.providerCountBadge.textContent = String(providers.length);
   if (els.otherProvidersCount) {
-    const otherCount = Math.max(providers.size - HERO_NAMED_PROVIDERS.length, 0);
+    const otherCount = Math.max(providers.length - HERO_NAMED_PROVIDERS.length, 0);
     els.otherProvidersCount.textContent = String(otherCount);
+  }
+  if (els.providerCloud) {
+    els.providerCloud.innerHTML = providers
+      .map((provider) => {
+        const logo = PROVIDER_LOGOS[provider];
+        const icon = logo ? `<img src="${logo}" alt="" loading="lazy" />` : "";
+        return `<span class="provider-chip">${icon}${provider}</span>`;
+      })
+      .join("");
+  }
+  if (els.sourceLinks && typeof PRICING_META !== "undefined") {
+    els.sourceLinks.innerHTML = Object.entries(PRICING_META.sources)
+      .map(([provider, url]) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${provider}</a>`)
+      .join(" · ");
   }
 }
 

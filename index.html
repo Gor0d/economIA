@@ -9,13 +9,13 @@
 
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://economia-calculadora.vercel.app/" />
-  <meta property="og:title" content="EconomIA — Descubra quanto sua IA realmente custa" />
-  <meta property="og:description" content="Compare o custo de tokens entre OpenAI, Anthropic, Google, DeepSeek, xAI, Mistral, Moonshot AI e Z.ai — e veja quanto você economizaria trocando de modelo." />
+  <meta property="og:title" content="EconomIA: descubra quanto sua IA realmente custa" />
+  <meta property="og:description" content="Compare o custo de tokens entre OpenAI, Anthropic, Google, DeepSeek, xAI, Mistral, Moonshot AI e Z.ai. Veja quanto você economizaria trocando de modelo." />
   <meta property="og:image" content="https://economia-calculadora.vercel.app/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="EconomIA — Descubra quanto sua IA realmente custa" />
+  <meta name="twitter:title" content="EconomIA: descubra quanto sua IA realmente custa" />
   <meta name="twitter:description" content="Compare o custo de tokens entre os principais provedores de IA e veja quanto você economizaria trocando de modelo." />
   <meta name="twitter:image" content="https://economia-calculadora.vercel.app/og-image.png" />
 
@@ -32,7 +32,7 @@
 
   <main class="site-shell">
     <nav class="topbar" aria-label="Navegação principal">
-      <a class="brand" href="#top" aria-label="EconomIA — início">
+      <a class="brand" href="#top" aria-label="EconomIA, início">
         <img class="brand-mark" src="assets/brand/economia-mark.svg" alt="" />
         <span class="brand-word">Econom<span class="brand-ia">IA</span></span>
       </a>
@@ -52,17 +52,7 @@
       <div class="eyebrow"><span><span id="modelCountBadge">35</span> modelos</span><span><span id="providerCountBadge">9</span> provedores</span><span>Câmbio automático</span></div>
       <h1>Descubra quanto sua IA <span>realmente custa.</span></h1>
       <p>Informe seu consumo uma vez. Compare OpenAI, Anthropic, Google e outros <span id="otherProvidersCount">6</span> provedores líderes de IA lado a lado.</p>
-      <div class="provider-cloud" aria-label="Provedores comparados">
-        <span class="provider-chip"><img src="assets/logos/openai.svg" alt="" />OpenAI</span>
-        <span class="provider-chip"><img src="assets/logos/anthropic.svg" alt="" />Anthropic</span>
-        <span class="provider-chip"><img src="assets/logos/google.svg" alt="" />Google</span>
-        <span class="provider-chip"><img src="assets/logos/deepseek.svg" alt="" />DeepSeek</span>
-        <span class="provider-chip"><img src="assets/logos/xai.svg" alt="" />xAI</span>
-        <span class="provider-chip"><img src="assets/logos/mistral.svg" alt="" />Mistral</span>
-        <span class="provider-chip"><img src="assets/logos/moonshotai.svg" alt="" />Moonshot AI</span>
-        <span class="provider-chip"><img src="assets/logos/zdotai.svg" alt="" />Z.ai</span>
-        <span class="provider-chip"><img src="assets/logos/qwen.svg" alt="" />Qwen</span>
-      </div>
+      <div id="providerCloud" class="provider-cloud" aria-label="Provedores comparados"></div>
     </header>
 
     <div class="product-tabs" role="tablist" aria-label="Ferramentas da EconomIA">
@@ -255,7 +245,7 @@
       <div class="context-heading">
         <div>
           <span class="step-kicker">Planeje antes da requisição</span>
-          <h2>Quanto contexto cabe — e quanto vai custar?</h2>
+          <h2>Quanto contexto cabe e quanto vai custar?</h2>
           <p>Separe o que será enviado, estime cache e saída e veja como o histórico cresce a cada turno.</p>
         </div>
         <div class="local-processing-pill"><span aria-hidden="true">✓</span> Texto processado somente neste navegador</div>
@@ -408,16 +398,7 @@
         <p>Uma estimativa clara para escolher melhor.</p>
       </div>
       <p class="source-list">
-        Tabela revisada em <span id="pricingDate">26/08/2026</span> ·
-        <a href="https://platform.claude.com/docs/en/about-claude/pricing" target="_blank" rel="noopener noreferrer">Anthropic</a> ·
-        <a href="https://developers.openai.com/api/docs/models" target="_blank" rel="noopener noreferrer">OpenAI</a> ·
-        <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noopener noreferrer">Google</a> ·
-        <a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener noreferrer">DeepSeek</a> ·
-        <a href="https://docs.x.ai/developers/pricing" target="_blank" rel="noopener noreferrer">xAI</a> ·
-        <a href="https://mistral.ai/pricing/api/" target="_blank" rel="noopener noreferrer">Mistral</a> ·
-        <a href="https://platform.kimi.ai/docs/pricing/chat-k3" target="_blank" rel="noopener noreferrer">Moonshot AI</a> ·
-        <a href="https://docs.z.ai/guides/overview/pricing" target="_blank" rel="noopener noreferrer">Z.ai</a> ·
-        <a href="https://www.alibabacloud.com/help/en/model-studio/model-pricing" target="_blank" rel="noopener noreferrer">Qwen</a>
+        Tabela revisada em <span id="pricingDate">26/08/2026</span> · <span id="sourceLinks"></span>
         <small>As marcas e logos pertencem aos respectivos proprietários e são usadas apenas para identificação.</small>
       </p>
     </footer>

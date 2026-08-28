@@ -27,6 +27,9 @@ const PRICING_META = {
     "Moonshot AI": "https://platform.kimi.ai/docs/pricing/chat-k3",
     "Z.ai": "https://docs.z.ai/guides/overview/pricing",
     Qwen: "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+    MiniMax: "https://platform.minimax.io/docs/guides/pricing-paygo.md",
+    Cohere: "https://cohere.com/pricing",
+    Perplexity: "https://docs.perplexity.ai/getting-started/pricing",
   },
 };
 
@@ -87,6 +90,17 @@ const PRICING = [
   // Preco do endpoint internacional (Cingapura); Batch API 50% off documentado.
   { id: "qwen3.8-max", provider: "Qwen", name: "Qwen3.8 Max", input: 2.00, output: 6.00, batchDiscount: 0.5, note: "Cache hit: US$ 0,20 por 1M tokens de input" },
   { id: "qwen3.8-flash", provider: "Qwen", name: "Qwen3.8 Flash", input: 0.15, output: 0.47, batchDiscount: 0.5, note: "Cache hit: US$ 0,015 por 1M tokens de input" },
+
+  // ---- MiniMax ----
+  { id: "minimax-m3", provider: "MiniMax", name: "MiniMax M3", input: 0.30, output: 1.20, note: "Prompts ≤512k tokens; acima disso dobra. Cache hit: US$ 0,06 por 1M tokens de input" },
+
+  // ---- Cohere ----
+  { id: "cohere-command-r-plus", provider: "Cohere", name: "Command R+", input: 2.50, output: 10.00 },
+  { id: "cohere-command-r", provider: "Cohere", name: "Command R", input: 0.50, output: 1.50 },
+
+  // ---- Perplexity ----
+  { id: "perplexity-sonar-pro", provider: "Perplexity", name: "Sonar Pro", input: 3.00, output: 15.00, note: "Soma taxa de US$ 6-14 por 1.000 requisições (busca na web), não incluída aqui" },
+  { id: "perplexity-sonar", provider: "Perplexity", name: "Sonar", input: 1.00, output: 1.00, note: "Soma taxa de US$ 5-12 por 1.000 requisições (busca na web), não incluída aqui" },
 ];
 
 if (typeof module !== "undefined" && module.exports) {

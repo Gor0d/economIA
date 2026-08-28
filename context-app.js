@@ -88,13 +88,13 @@
   function displayMoney(usd) {
     const currency = els.currency.value;
     const rate = Number(els.rate.value);
-    if (currency === "BRL" && !isValidExchangeRate(rate)) return "—";
+    if (currency === "BRL" && !isValidExchangeRate(rate)) return "Indisponível";
     const converted = currency === "BRL" ? usd * rate : usd;
     return formatMoney(converted, currency === "BRL" ? "BRL" : "USD");
   }
 
   function formatUnitPrice(value) {
-    if (value === null || value === undefined) return "—";
+    if (value === null || value === undefined) return "Indisponível";
     const digits = value < 0.1 ? 3 : value < 1 ? 2 : 2;
     return `US$ ${value.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: digits })}`;
   }
@@ -277,11 +277,11 @@
     renderSectionBreakdown(tokenEstimate.sections, tokenEstimate.total);
 
     els.nextCost.textContent = rateValid ? displayMoney(probable.totalWithCache) : "Revise a cotação";
-    els.noCacheCost.textContent = rateValid ? displayMoney(probable.costWithoutCache) : "—";
-    els.withCacheCost.textContent = rateValid ? displayMoney(probable.costWithCache) : "—";
-    els.minOutputCost.textContent = rateValid ? displayMoney(scenarios.minimum.outputCost) : "—";
-    els.likelyOutputCost.textContent = rateValid ? displayMoney(probable.outputCost) : "—";
-    els.maxOutputCost.textContent = rateValid ? displayMoney(scenarios.maximum.outputCost) : "—";
+    els.noCacheCost.textContent = rateValid ? displayMoney(probable.costWithoutCache) : "Indisponível";
+    els.withCacheCost.textContent = rateValid ? displayMoney(probable.costWithCache) : "Indisponível";
+    els.minOutputCost.textContent = rateValid ? displayMoney(scenarios.minimum.outputCost) : "Indisponível";
+    els.likelyOutputCost.textContent = rateValid ? displayMoney(probable.outputCost) : "Indisponível";
+    els.maxOutputCost.textContent = rateValid ? displayMoney(scenarios.maximum.outputCost) : "Indisponível";
 
     els.tierNotice.hidden = !probable.rates.longContext;
     els.tierNotice.textContent = probable.rates.longContext
