@@ -28,6 +28,9 @@ const els = {
   emptyState: document.getElementById("emptyState"),
   pricingDate: document.getElementById("pricingDate"),
   pricingDateTop: document.getElementById("pricingDateTop"),
+  modelCountBadge: document.getElementById("modelCountBadge"),
+  providerCountBadge: document.getElementById("providerCountBadge"),
+  otherProvidersCount: document.getElementById("otherProvidersCount"),
   themeToggle: document.getElementById("themeToggle"),
   themeColor: document.getElementById("themeColor"),
 };
@@ -498,6 +501,18 @@ function showManualRateStatus() {
   els.rateStatus.classList.remove("rate-warning");
 }
 
+const HERO_NAMED_PROVIDERS = ["OpenAI", "Anthropic", "Google"];
+
+function showCoverageStats() {
+  const providers = new Set(PRICING.map((model) => model.provider));
+  els.modelCountBadge.textContent = String(PRICING.length);
+  els.providerCountBadge.textContent = String(providers.size);
+  if (els.otherProvidersCount) {
+    const otherCount = Math.max(providers.size - HERO_NAMED_PROVIDERS.length, 0);
+    els.otherProvidersCount.textContent = String(otherCount);
+  }
+}
+
 function showPricingDate() {
   const reviewedDate = formatRateDate(PRICING_META.updatedAt);
   const monitoredAt =
@@ -564,6 +579,7 @@ for (const button of els.pricingModeButtons) {
   button.addEventListener("click", () => setPricingMode(button.dataset.pricingMode));
 }
 
+showCoverageStats();
 showPricingDate();
 updateSplitLabels();
 render();

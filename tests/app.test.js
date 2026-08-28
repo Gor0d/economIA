@@ -71,6 +71,9 @@ function createAppContext() {
     "themeToggle",
     "themeColor",
     "summaryFootnoteText",
+    "modelCountBadge",
+    "providerCountBadge",
+    "otherProvidersCount",
   ];
   const elements = Object.fromEntries(ids.map((id) => [id, createElement(id)]));
   elements.inputTokens.value = "1000000";

@@ -49,9 +49,9 @@
     </nav>
 
     <header id="top" class="hero">
-      <div class="eyebrow"><span>35 modelos</span><span>9 provedores</span><span>Câmbio automático</span></div>
+      <div class="eyebrow"><span><span id="modelCountBadge">35</span> modelos</span><span><span id="providerCountBadge">9</span> provedores</span><span>Câmbio automático</span></div>
       <h1>Descubra quanto sua IA <span>realmente custa.</span></h1>
-      <p>Informe seu consumo uma vez. Compare OpenAI, Anthropic, Google, DeepSeek, xAI, Mistral, Moonshot AI, Z.ai e Qwen lado a lado.</p>
+      <p>Informe seu consumo uma vez. Compare OpenAI, Anthropic, Google e outros <span id="otherProvidersCount">6</span> provedores líderes de IA lado a lado.</p>
       <div class="provider-cloud" aria-label="Provedores comparados">
         <span class="provider-chip"><img src="assets/logos/openai.svg" alt="" />OpenAI</span>
         <span class="provider-chip"><img src="assets/logos/anthropic.svg" alt="" />Anthropic</span>
@@ -65,6 +65,20 @@
       </div>
     </header>
 
+    <div class="product-tabs" role="tablist" aria-label="Ferramentas da EconomIA">
+      <button id="comparisonTab" class="product-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="comparisonPanel" data-product-tab="comparison">
+        <span aria-hidden="true">↔</span>
+        Comparar consumo
+        <small>Tokens já utilizados</small>
+      </button>
+      <button id="contextTab" class="product-tab" type="button" role="tab" aria-selected="false" aria-controls="contextPanel" data-product-tab="context">
+        <span aria-hidden="true">◫</span>
+        Contexto &amp; Custo
+        <small>Estime antes de chamar</small>
+      </button>
+    </div>
+
+    <div id="comparisonPanel" role="tabpanel" aria-labelledby="comparisonTab">
     <section class="calculator-shell" aria-labelledby="calculatorTitle">
       <div class="config-panel">
         <div class="panel-heading">
@@ -235,6 +249,157 @@
         <p>O modo Batch aplica o desconto oficial (~50%) só nos modelos cuja Batch API é documentada publicamente pelo provedor (OpenAI, Anthropic e Google); os demais mantêm o preço padrão nesse modo. Ainda não incluímos desconto de cache, de volume, nem tarifas especiais para contexto longo.</p>
       </div>
     </details>
+    </div>
+
+    <section id="contextPanel" class="context-tool" role="tabpanel" aria-labelledby="contextTab" hidden>
+      <div class="context-heading">
+        <div>
+          <span class="step-kicker">Planeje antes da requisição</span>
+          <h2>Quanto contexto cabe — e quanto vai custar?</h2>
+          <p>Separe o que será enviado, estime cache e saída e veja como o histórico cresce a cada turno.</p>
+        </div>
+        <div class="local-processing-pill"><span aria-hidden="true">✓</span> Texto processado somente neste navegador</div>
+      </div>
+
+      <div class="context-workspace">
+        <div class="context-config-card">
+          <div class="context-section-heading">
+            <span class="field-number">1</span>
+            <div><h3>Monte o contexto</h3><p>A contagem é aproximada e varia conforme o tokenizador do provedor.</p></div>
+          </div>
+
+          <div class="context-input-list">
+            <label class="context-text-field" for="contextSystem">
+              <span><strong>System / developer prompt</strong><small>Regras, persona e instruções estáveis</small></span>
+              <textarea id="contextSystem" rows="4" placeholder="Você é um assistente que…"></textarea>
+              <span class="context-token-count"><strong id="contextSystemTokens">0</strong> tokens estimados</span>
+            </label>
+            <label class="context-text-field" for="contextHistory">
+              <span><strong>Histórico da conversa</strong><small>Mensagens anteriores reenviadas</small></span>
+              <textarea id="contextHistory" rows="4" placeholder="Usuário: …&#10;Assistente: …"></textarea>
+              <span class="context-token-count"><strong id="contextHistoryTokens">0</strong> tokens estimados</span>
+            </label>
+            <label class="context-text-field" for="contextDocuments">
+              <span><strong>Documentos / contexto recuperado</strong><small>Arquivos, trechos de RAG ou base de conhecimento</small></span>
+              <textarea id="contextDocuments" rows="5" placeholder="Cole aqui somente os trechos que pretende enviar…"></textarea>
+              <span class="context-token-count"><strong id="contextDocumentsTokens">0</strong> tokens estimados</span>
+            </label>
+            <label class="context-text-field" for="contextTools">
+              <span><strong>Ferramentas e schemas</strong><small>Descrições de tools, JSON Schema e exemplos</small></span>
+              <textarea id="contextTools" rows="4" placeholder='{"name":"buscar_cliente","parameters":{…}}'></textarea>
+              <span class="context-token-count"><strong id="contextToolsTokens">0</strong> tokens estimados</span>
+            </label>
+            <label class="context-text-field" for="contextCurrent">
+              <span><strong>Prompt atual</strong><small>A solicitação deste turno</small></span>
+              <textarea id="contextCurrent" rows="4" placeholder="Analise os dados e apresente…"></textarea>
+              <span class="context-token-count"><strong id="contextCurrentTokens">0</strong> tokens estimados</span>
+            </label>
+          </div>
+
+          <div class="context-divider"></div>
+          <div class="context-section-heading">
+            <span class="field-number">2</span>
+            <div><h3>Configure os cenários</h3><p>Saída e cache são hipóteses antes da chamada.</p></div>
+          </div>
+
+          <div class="context-settings-grid">
+            <div class="field-block context-model-field">
+              <label for="contextModel">Provedor e modelo</label>
+              <select id="contextModel"></select>
+            </div>
+            <div class="output-scenarios" aria-labelledby="outputScenarioLabel">
+              <span id="outputScenarioLabel">Tokens de saída</span>
+              <label for="contextOutputMin">Mínima<input id="contextOutputMin" type="number" min="0" max="128000" step="100" value="500" /></label>
+              <label for="contextOutputLikely">Provável<input id="contextOutputLikely" type="number" min="0" max="128000" step="100" value="1500" /></label>
+              <label for="contextOutputMax">Máxima<input id="contextOutputMax" type="number" min="0" max="128000" step="100" value="4000" /></label>
+            </div>
+            <div class="context-range-field">
+              <div><label for="contextCachePercent">Contexto lido do cache</label><strong id="contextCacheValue">40%</strong></div>
+              <input id="contextCachePercent" type="range" min="0" max="100" step="5" value="40" />
+              <small>Percentual do input que você espera já estar disponível no cache do provedor.</small>
+            </div>
+            <div class="field-block">
+              <label for="contextFutureTurns">Turnos futuros para comparar</label>
+              <input id="contextFutureTurns" type="number" min="1" max="100" step="1" value="10" />
+            </div>
+            <div class="field-block">
+              <label for="contextCurrency">Moeda</label>
+              <select id="contextCurrency"><option value="USD">USD · US$</option><option value="BRL">BRL · R$</option></select>
+            </div>
+            <div id="contextRateField" class="field-block" hidden>
+              <label for="contextRate">Cotação USD → BRL</label>
+              <input id="contextRate" type="number" inputmode="decimal" min="0.0001" step="0.0001" value="5.30" />
+            </div>
+          </div>
+        </div>
+
+        <aside class="context-summary-card" aria-label="Resultado estimado do contexto" aria-live="polite">
+          <div class="estimate-label"><span>Estimativa pré-chamada</span><small>Não é consumo confirmado</small></div>
+          <p id="contextSelectedModel" class="context-selected-model">GPT-5.6 Terra</p>
+          <strong id="contextTotalTokens" class="context-total-value">0</strong>
+          <span class="context-total-label">tokens de entrada estimados</span>
+
+          <div class="context-meter-wrap">
+            <div><span>Janela utilizada</span><strong id="contextWindowPercent">0%</strong></div>
+            <div class="context-meter" role="progressbar" aria-label="Percentual da janela de contexto utilizado" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="contextMeterBar"></span></div>
+            <small id="contextWindowLabel">0 de 1.050.000 tokens</small>
+          </div>
+
+          <div id="contextSectionBreakdown" class="section-breakdown"></div>
+
+          <div class="context-cost-block">
+            <span>Custo provável da próxima chamada</span>
+            <strong id="contextNextCost">US$ 0,00</strong>
+            <div class="cost-comparison-line"><span>Sem cache</span><strong id="contextNoCacheCost">US$ 0,00</strong></div>
+            <div class="cost-comparison-line"><span>Com cache estimado</span><strong id="contextWithCacheCost">US$ 0,00</strong></div>
+          </div>
+
+          <div class="output-cost-list" aria-label="Custos por cenário de saída">
+            <div><span>Saída mínima</span><strong id="contextMinOutputCost">US$ 0,00</strong></div>
+            <div class="is-probable"><span>Saída provável</span><strong id="contextLikelyOutputCost">US$ 0,00</strong></div>
+            <div><span>Saída máxima</span><strong id="contextMaxOutputCost">US$ 0,00</strong></div>
+          </div>
+
+          <p id="contextTierNotice" class="tier-notice" hidden></p>
+          <p class="context-summary-note">Imagens, áudio, ferramentas, buscas, impostos, armazenamento de cache e câmbio podem adicionar custos. Contextos maiores também podem aumentar o tempo até o primeiro token.</p>
+        </aside>
+      </div>
+
+      <section class="context-projection" aria-labelledby="projectionTitle">
+        <div class="results-heading">
+          <div><span class="step-kicker">Crescimento da conversa</span><h2 id="projectionTitle">Projeção acumulada</h2><p>Supõe que o histórico anterior seja reenviado e cresça com a saída provável e um novo prompt de tamanho semelhante.</p></div>
+          <span id="customProjection" class="result-count">10 turnos · US$ 0,00</span>
+        </div>
+        <div id="projectionCards" class="projection-cards"></div>
+      </section>
+
+      <section class="context-comparison results-section" aria-labelledby="contextComparisonTitle">
+        <div class="results-heading">
+          <div><span class="step-kicker">OpenAI · Anthropic · Google</span><h2 id="contextComparisonTitle">Compare contexto e cache</h2><p>Mesmo texto estimado e mesmo cenário provável em todos os modelos.</p></div>
+          <span id="contextPricingDate" class="result-count">Preços: 28/08/2026</span>
+        </div>
+        <div class="table-wrap context-table-wrap">
+          <table>
+            <thead><tr><th>Modelo</th><th>Janela</th><th>Input</th><th>Cache lido</th><th>Cache gravado</th><th>Output</th><th>Próxima chamada</th><th id="conversationCostHeading">10 turnos</th></tr></thead>
+            <tbody id="contextComparisonRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="context-insights" aria-labelledby="contextInsightsTitle">
+        <div class="results-heading"><div><span class="step-kicker">Ações recomendadas</span><h2 id="contextInsightsTitle">Onde otimizar primeiro</h2></div></div>
+        <div id="contextRecommendations" class="recommendation-grid"></div>
+      </section>
+
+      <details class="methodology context-methodology">
+        <summary>Como esta estimativa funciona e o que ela não inclui?</summary>
+        <div>
+          <p><strong>Estimativa:</strong> o texto é contado localmente por uma heurística calibrada por provedor. A contagem oficial pode divergir porque OpenAI, Anthropic e Google usam tokenizadores e overheads próprios. Nenhum texto digitado aqui é enviado para APIs externas.</p>
+          <p><strong>Cache:</strong> a simulação trata a parcela informada como leitura de cache e o restante como input novo. Quando o provedor publica uma tarifa de gravação separada, ela é aplicada ao prefixo novo; armazenamento por hora não entra no total.</p>
+          <p><strong>Consumo confirmado:</strong> futuramente poderá ser importado do objeto <code>usage</code> das APIs, incluindo <code>input_tokens</code>, <code>cached_tokens</code>, <code>cache_write_tokens</code>, <code>output_tokens</code> e <code>reasoning_tokens</code>. Hoje todos os números desta aba são pré-chamada.</p>
+        </div>
+      </details>
+    </section>
 
     <footer>
       <div>
@@ -261,5 +426,8 @@
   <script src="pricing.js"></script>
   <script src="calculator.js"></script>
   <script src="app.js"></script>
+  <script src="context-models.js"></script>
+  <script src="context-calculator.js"></script>
+  <script src="context-app.js"></script>
 </body>
 </html>
