@@ -118,10 +118,10 @@ python -m http.server 8000
 ```bash
 npm run lint           # análise sintática de todos os arquivos JS/MJS
 npm test               # cálculos, contexto, cache, projeções e integridade dos catálogos
-npm run build          # valida referências e estrutura do pacote estático
+npm run validate:static # valida referências e estrutura do pacote estático (não é build de verdade)
 npm run check:sources  # confirma que as páginas oficiais cadastradas continuam acessíveis
 npm run check:drift    # compara as páginas com o retrato salvo (usado pelo monitor diário)
-npm run check          # lint + test + build + check:sources
+npm run check          # lint + test + validate:static + check:sources
 ```
 
 ## Como fazer deploy
