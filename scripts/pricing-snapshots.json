@@ -2,41 +2,61 @@
   "Anthropic": {
     "hash": "6caa40ff971d3a1b13f6ccf2bf0172795a627e2613d55d1a0c7063428c892233",
     "url": "https://platform.claude.com/docs/en/about-claude/pricing",
-    "checkedAt": "2026-08-28T11:56:24.592Z"
+    "checkedAt": "2026-08-28T21:22:28.815Z"
   },
   "OpenAI": {
     "hash": "e90275b567950d3736cfb418f1b5398363fcff4ac9d27b23c645a5eae3bc6044",
     "url": "https://developers.openai.com/api/docs/models",
-    "checkedAt": "2026-08-28T11:56:24.592Z"
+    "checkedAt": "2026-08-28T21:22:28.816Z"
   },
   "Google": {
-    "hash": "479acde35496a5534793aea76d3d00d8d4602cbf836bfa1ff1ddb701b1ac4e3d",
+    "hash": "501579028fa81b27e6688ec38fee62bb8bf4754ffb18fd0f82ef8b16aecc896f",
     "url": "https://ai.google.dev/gemini-api/docs/pricing",
-    "checkedAt": "2026-08-27T21:01:35.610Z"
+    "checkedAt": "2026-08-28T21:22:28.816Z"
   },
   "DeepSeek": {
     "hash": "580838d6898674c3a3d9f7c07486e784b5c9cb69de48d2048e17345528f04448",
     "url": "https://api-docs.deepseek.com/quick_start/pricing/",
-    "checkedAt": "2026-08-28T11:56:24.592Z"
+    "checkedAt": "2026-08-28T21:22:28.816Z"
   },
   "xAI": {
     "hash": "30293c841ec0d3eaba91490963dd57c4dfc2fb7d7431ef0f24d382e39ff52f36",
     "url": "https://docs.x.ai/developers/pricing",
-    "checkedAt": "2026-08-28T11:56:24.592Z"
+    "checkedAt": "2026-08-28T21:22:28.816Z"
   },
   "Mistral": {
     "hash": "5d7efe6bfbe25ae3b7f2becd35a48d61918edddbf1721e74258bb858c98065b1",
     "url": "https://mistral.ai/pricing/api/",
-    "checkedAt": "2026-08-28T11:56:24.592Z"
+    "checkedAt": "2026-08-28T21:22:28.816Z"
   },
   "Moonshot AI": {
     "hash": "a2d282b9647321dbfd1da007bddc634852bafc56e5f1f81cc268fd287a40b81a",
     "url": "https://platform.kimi.ai/docs/pricing/chat-k3",
-    "checkedAt": "2026-08-28T11:56:24.592Z"
+    "checkedAt": "2026-08-28T21:22:28.816Z"
   },
   "Z.ai": {
     "hash": "2ea015694a5ebc96ff95ff77a845b5b1a3fdb2c8b0685761909585e9d74a2618",
     "url": "https://docs.z.ai/guides/overview/pricing",
-    "checkedAt": "2026-08-28T11:56:24.592Z"
+    "checkedAt": "2026-08-28T21:22:28.816Z"
+  },
+  "Qwen": {
+    "hash": "b707842c8c60bf8f1ba827fd3977a583e6e3090106db4198bf245c7f97e7b9e4",
+    "url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
+    "checkedAt": "2026-08-28T21:22:28.816Z"
+  },
+  "MiniMax": {
+    "hash": "c10af6fd405973da5814750983775abc0b7bb8c1aec4a2af956ca23b7ee809e6",
+    "url": "https://platform.minimax.io/docs/guides/pricing-paygo.md",
+    "checkedAt": "2026-08-28T21:22:28.816Z"
+  },
+  "Cohere": {
+    "hash": "55ce4d09522243f9e150ac8023f5f13344cdd4d37a505d391c214b8a268efb59",
+    "url": "https://cohere.com/pricing",
+    "checkedAt": "2026-08-28T21:22:28.816Z"
+  },
+  "Perplexity": {
+    "hash": "c64b612455725b49b96fa7a9dc82d543a0277e47610bde45c7061e7af60695fd",
+    "url": "https://docs.perplexity.ai/getting-started/pricing",
+    "checkedAt": "2026-08-28T21:22:28.816Z"
   }
 }
