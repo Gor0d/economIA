@@ -1,5 +1,5 @@
 {
-  "buildCommand": false,
+  "buildCommand": null,
   "outputDirectory": ".",
   "headers": [
     {
