@@ -187,7 +187,43 @@
     return recommendations;
   }
 
-  function normalizeActualUsage(usage = {}) {
+  // Cada provedor devolve o objeto de uso real da API com um formato diferente.
+  // `provider` (quando informado, a partir do modelo selecionado) decide direto;
+  // sem ele, detecta pelo formato das chaves presentes — sempre cai de volta pro
+  // formato OpenAI (Responses API ou Chat Completions), que é o mais comum.
+  function normalizeActualUsage(usage = {}, provider) {
+    const looksLikeGoogle = provider === "Google" || "usageMetadata" in usage || "promptTokenCount" in usage;
+    if (looksLikeGoogle) {
+      const meta = usage.usageMetadata || usage;
+      return {
+        input_tokens: Number(meta.promptTokenCount ?? 0),
+        cached_tokens: Number(meta.cachedContentTokenCount ?? 0),
+        cache_write_tokens: 0,
+        output_tokens: Number(meta.candidatesTokenCount ?? 0),
+        reasoning_tokens: Number(meta.thoughtsTokenCount ?? 0),
+      };
+    }
+
+    const looksLikeAnthropic =
+      provider === "Anthropic" || "cache_creation_input_tokens" in usage || "cache_read_input_tokens" in usage;
+    if (looksLikeAnthropic) {
+      // Anthropic reporta input_tokens, cache_creation_input_tokens e
+      // cache_read_input_tokens como três contadores separados (não um dentro
+      // do outro) — o total de input é a soma dos três.
+      const cachedTokens = Number(usage.cache_read_input_tokens ?? 0);
+      const cacheWriteTokens = Number(usage.cache_creation_input_tokens ?? 0);
+      const baseInputTokens = Number(usage.input_tokens ?? 0);
+      return {
+        input_tokens: baseInputTokens + cachedTokens + cacheWriteTokens,
+        cached_tokens: cachedTokens,
+        cache_write_tokens: cacheWriteTokens,
+        output_tokens: Number(usage.output_tokens ?? 0),
+        reasoning_tokens: 0,
+      };
+    }
+
+    // OpenAI: aqui input_tokens/output_tokens já são o total — os campos de
+    // detalhe (*_details) são um recorte de dentro desse total, não algo a somar.
     const inputDetails = usage.input_tokens_details || usage.prompt_tokens_details || {};
     const outputDetails = usage.output_tokens_details || usage.completion_tokens_details || {};
     return {
@@ -199,8 +235,26 @@
     };
   }
 
+  // Custo real a partir de um usage já normalizado (normalizeActualUsage).
+  // input_tokens é sempre o total (cache incluso) nos três formatos aceitos,
+  // então a mesma conta serve pra OpenAI, Anthropic e Google.
+  function costFromActualUsage({ model, usage }) {
+    const rates = effectiveRates(model, usage.input_tokens);
+    const cacheWriteRate = rates.cacheWrite ?? rates.input;
+    const freshTokens = Math.max(0, usage.input_tokens - usage.cached_tokens - usage.cache_write_tokens);
+
+    const cachedCost = (usage.cached_tokens * rates.cachedInput) / 1_000_000;
+    const cacheWriteCost = (usage.cache_write_tokens * cacheWriteRate) / 1_000_000;
+    const freshCost = (freshTokens * rates.input) / 1_000_000;
+    const outputCost = (usage.output_tokens * rates.output) / 1_000_000;
+    const inputCost = cachedCost + cacheWriteCost + freshCost;
+
+    return { inputCost, outputCost, totalCost: inputCost + outputCost, rates };
+  }
+
   return {
     buildRecommendations,
+    costFromActualUsage,
     effectiveRates,
     estimateCall,
     estimateOutputScenarios,

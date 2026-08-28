@@ -2,9 +2,11 @@
   const { CONTEXT_MODELS, CONTEXT_PRICING_META } = ContextCatalog;
   const {
     buildRecommendations,
+    costFromActualUsage,
     effectiveRates,
     estimateOutputScenarios,
     estimateSections,
+    normalizeActualUsage,
     projectConversation,
   } = ContextCalculator;
   const { formatMoney, formatNumber, isValidExchangeRate } = CalculatorCore;
@@ -44,6 +46,9 @@
     conversationCostHeading: document.getElementById("conversationCostHeading"),
     recommendations: document.getElementById("contextRecommendations"),
     pricingDate: document.getElementById("contextPricingDate"),
+    actualUsageInput: document.getElementById("contextActualUsage"),
+    actualUsageError: document.getElementById("contextActualError"),
+    actualUsageComparison: document.getElementById("contextActualComparison"),
   };
 
   const sectionConfig = [
@@ -216,6 +221,51 @@
     }).join("");
   }
 
+  function formatDelta(percent) {
+    if (!Number.isFinite(percent)) return "";
+    const sign = percent > 0 ? "+" : "";
+    return `${sign}${percent.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`;
+  }
+
+  function renderActualUsage({ model, estimatedInputTokens, estimatedOutputTokens, estimatedCostUsd }) {
+    const raw = els.actualUsageInput.value.trim();
+    els.actualUsageError.hidden = true;
+    els.actualUsageComparison.hidden = true;
+    if (!raw) return;
+
+    let parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      els.actualUsageError.hidden = false;
+      els.actualUsageError.textContent = 'JSON inválido — cole o objeto "usage" exatamente como veio na resposta da API.';
+      return;
+    }
+
+    const usage = normalizeActualUsage(parsed, model.provider);
+    if (usage.input_tokens <= 0 && usage.output_tokens <= 0) {
+      els.actualUsageError.hidden = false;
+      els.actualUsageError.textContent =
+        'Não encontrei tokens de entrada/saída nesse objeto. Confira se colou o campo "usage" (ou "usageMetadata", no caso do Google).';
+      return;
+    }
+
+    const result = costFromActualUsage({ model, usage });
+    const inputDelta =
+      estimatedInputTokens > 0 ? ((usage.input_tokens - estimatedInputTokens) / estimatedInputTokens) * 100 : null;
+    const outputDelta =
+      estimatedOutputTokens > 0 ? ((usage.output_tokens - estimatedOutputTokens) / estimatedOutputTokens) * 100 : null;
+    const costDelta = estimatedCostUsd > 0 ? ((result.totalCost - estimatedCostUsd) / estimatedCostUsd) * 100 : null;
+    const costClass = costDelta === null ? "" : costDelta > 0 ? "is-over" : costDelta < 0 ? "is-under" : "";
+
+    els.actualUsageComparison.hidden = false;
+    els.actualUsageComparison.innerHTML = `
+      <div class="actual-usage-row"><span>Tokens de entrada</span><strong>${formatNumber(usage.input_tokens)} real · estimado ${formatNumber(estimatedInputTokens)}${inputDelta === null ? "" : ` (${formatDelta(inputDelta)})`}</strong></div>
+      <div class="actual-usage-row"><span>Tokens de saída</span><strong>${formatNumber(usage.output_tokens)} real · estimado ${formatNumber(estimatedOutputTokens)}${outputDelta === null ? "" : ` (${formatDelta(outputDelta)})`}</strong></div>
+      <div class="actual-usage-row"><span>Custo desta chamada</span><strong class="${costClass}">${displayMoney(result.totalCost)} real · estimado ${displayMoney(estimatedCostUsd)}${costDelta === null ? "" : ` (${formatDelta(costDelta)})`}</strong></div>
+    `;
+  }
+
   function renderRecommendations(recommendations) {
     els.recommendations.innerHTML = recommendations
       .map(
@@ -288,6 +338,13 @@
       ? `Faixa de contexto longo ativa: acima de ${formatNumber(model.longContext.threshold)} tokens, input/cache usam ${model.longContext.inputMultiplier}× e output ${model.longContext.outputMultiplier}×.`
       : "";
 
+    renderActualUsage({
+      model,
+      estimatedInputTokens: tokenEstimate.total,
+      estimatedOutputTokens: outputLikely,
+      estimatedCostUsd: probable.totalWithCache,
+    });
+
     const customProjection = renderProjections({
       model,
       inputTokens: tokenEstimate.total,
@@ -323,9 +380,17 @@
   });
 
   sectionConfig.forEach(({ input }) => input.addEventListener("input", render));
-  [els.model, els.outputMin, els.outputLikely, els.outputMax, els.cachePercent, els.futureTurns, els.currency, els.rate].forEach(
-    (element) => element.addEventListener("input", render)
-  );
+  [
+    els.model,
+    els.outputMin,
+    els.outputLikely,
+    els.outputMax,
+    els.cachePercent,
+    els.futureTurns,
+    els.currency,
+    els.rate,
+    els.actualUsageInput,
+  ].forEach((element) => element.addEventListener("input", render));
 
   activateTab(location.hash === "#contexto" ? "context" : "comparison");
   render();

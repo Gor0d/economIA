@@ -5,6 +5,7 @@ const { CONTEXT_MODELS, CONTEXT_PRICING_META } = require("../context-models.js")
 const { PRICING } = require("../pricing.js");
 const {
   buildRecommendations,
+  costFromActualUsage,
   estimateCall,
   estimateSections,
   estimateTextTokens,
@@ -102,6 +103,56 @@ test("normaliza objetos usage atuais e legados sem somar reasoning duas vezes", 
     }),
     { input_tokens: 1200, cached_tokens: 800, cache_write_tokens: 200, output_tokens: 500, reasoning_tokens: 300 }
   );
+});
+
+test("normaliza usage no formato da Anthropic (contadores separados, não aninhados)", () => {
+  assert.deepEqual(
+    normalizeActualUsage({
+      input_tokens: 100,
+      cache_creation_input_tokens: 50,
+      cache_read_input_tokens: 30,
+      output_tokens: 40,
+    }),
+    { input_tokens: 180, cached_tokens: 30, cache_write_tokens: 50, output_tokens: 40, reasoning_tokens: 0 }
+  );
+
+  // provider explícito deve funcionar mesmo sem as chaves distintivas
+  assert.deepEqual(
+    normalizeActualUsage({ input_tokens: 100, output_tokens: 40 }, "Anthropic"),
+    { input_tokens: 100, cached_tokens: 0, cache_write_tokens: 0, output_tokens: 40, reasoning_tokens: 0 }
+  );
+});
+
+test("normaliza usage no formato do Google (usageMetadata)", () => {
+  assert.deepEqual(
+    normalizeActualUsage({
+      usageMetadata: {
+        promptTokenCount: 500,
+        cachedContentTokenCount: 100,
+        candidatesTokenCount: 80,
+        thoughtsTokenCount: 20,
+      },
+    }),
+    { input_tokens: 500, cached_tokens: 100, cache_write_tokens: 0, output_tokens: 80, reasoning_tokens: 20 }
+  );
+});
+
+test("calcula o custo real a partir do usage normalizado (cache lido + gravado + tokens novos)", () => {
+  const claudeSonnet = model("claude-sonnet-5");
+  const usage = normalizeActualUsage({
+    input_tokens: 500_000,
+    cache_creation_input_tokens: 100_000,
+    cache_read_input_tokens: 400_000,
+    output_tokens: 200_000,
+  });
+  assert.equal(usage.input_tokens, 1_000_000);
+
+  const result = costFromActualUsage({ model: claudeSonnet, usage });
+  // cache lido: 400k * 0.2/1M = 0.08 | gravado: 100k * 2.5/1M = 0.25 | novo: 500k * 2/1M = 1.0
+  assert.ok(Math.abs(result.inputCost - 1.33) < 1e-9, result.inputCost);
+  // saída: 200k * 10/1M = 2.0
+  assert.ok(Math.abs(result.outputCost - 2.0) < 1e-9, result.outputCost);
+  assert.ok(Math.abs(result.totalCost - 3.33) < 1e-9, result.totalCost);
 });
 
 test("catálogo de contexto tem fontes oficiais e não diverge dos preços-base", () => {

@@ -353,6 +353,17 @@
 
           <p id="contextTierNotice" class="tier-notice" hidden></p>
           <p class="context-summary-note">Imagens, áudio, ferramentas, buscas, impostos, armazenamento de cache e câmbio podem adicionar custos. Contextos maiores também podem aumentar o tempo até o primeiro token.</p>
+
+          <details class="context-actual-usage">
+            <summary>Comparar com o uso real da API</summary>
+            <div>
+              <label for="contextActualUsage">Cole o objeto <code>usage</code> da resposta (OpenAI, Anthropic ou Google)</label>
+              <textarea id="contextActualUsage" rows="4" placeholder='{"input_tokens":1234,"output_tokens":567,"input_tokens_details":{"cached_tokens":200}}'></textarea>
+              <p class="context-actual-hint">Só compara com a sua estimativa aqui no navegador — nada é enviado a lugar nenhum.</p>
+              <p id="contextActualError" class="tier-notice" hidden></p>
+              <div id="contextActualComparison" class="actual-usage-comparison" hidden></div>
+            </div>
+          </details>
         </aside>
       </div>
 
