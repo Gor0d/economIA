@@ -79,6 +79,15 @@ npm run check:drift     # compara com o retrato salvo e mostra o que mudou
 
 ## Funcionalidades
 
+- **Duas ferramentas em abas**: “Comparar consumo” trabalha com tokens já medidos;
+  “Contexto & Custo” estima localmente o texto antes da chamada e projeta o crescimento da
+  conversa.
+- **Contexto separado por origem**: system/developer, histórico, documentos/RAG,
+  ferramentas/schemas e prompt atual, com contagem aproximada por seção e provedor.
+- **Cenários de cache e saída**: leitura e gravação de cache, saídas mínima/provável/máxima,
+  uso da janela, faixas de contexto longo e projeções para 1, 10, 50 e 100 turnos.
+- **Comparação de contexto** entre modelos atuais de OpenAI, Anthropic e Google, com catálogo
+  e fontes oficiais separados. O texto digitado nunca sai do navegador.
 - **Dois modos de entrada**: tokens de entrada/saída separados, ou só o total com uma
   estimativa de divisão (com perfis prontos: chat, código, agentes).
 - **Modo de cobrança Padrão / Batch API (−50%)**: aplica o desconto oficial de Batch API nos
@@ -107,10 +116,12 @@ python -m http.server 8000
 É necessário Node.js 20 ou superior. Não há dependências para instalar:
 
 ```bash
-npm test            # cálculos, formatos, câmbio, Batch API, integridade da tabela
+npm run lint           # análise sintática de todos os arquivos JS/MJS
+npm test               # cálculos, contexto, cache, projeções e integridade dos catálogos
+npm run build          # valida referências e estrutura do pacote estático
 npm run check:sources  # confirma que as páginas oficiais cadastradas continuam acessíveis
 npm run check:drift    # compara as páginas com o retrato salvo (usado pelo monitor diário)
-npm run check           # test + check:sources, o combo recomendado antes de um PR
+npm run check          # lint + test + build + check:sources
 ```
 
 ## Como fazer deploy
@@ -131,10 +142,14 @@ X-Frame-Options etc.). Por ser uma pasta estática, também funciona em:
 - `pricing-status.js` — data da última execução do monitor, gerada pelo workflow diário
 - `calculator.js` — parser e funções puras de cálculo, compartilhadas pelo site e pelos testes
 - `app.js` — lógica de interface e renderização
+- `context-models.js` — catálogo de contexto, cache, janelas e faixas de preço
+- `context-calculator.js` — tokenização aproximada e funções puras de custo/projeção
+- `context-app.js` — estado e renderização da aba “Contexto & Custo”
 - `theme-init.js` — detecção de tema (script externo, exigido pela CSP sem `unsafe-inline`)
 - `vercel.json` — headers de segurança do deploy
 - `scripts/check-pricing-sources.mjs` — confirma que as páginas oficiais respondem
 - `scripts/check-pricing-drift.mjs` — monitor de mudança de preço (ver acima)
+- `scripts/check-static-build.mjs` — valida os arquivos locais usados pelo deploy estático
 - `scripts/pricing-snapshots.json` — retrato salvo usado pelo monitor (versionado no Git)
 - `.github/workflows/pricing-watch.yml` — roda o monitor todo dia e abre Issue se algo mudar
 - `tests/` — testes automatizados sem dependências externas
@@ -171,13 +186,12 @@ atualização (26/08/2026):
 
 ## O que a calculadora **não** modela (por simplicidade)
 
-- **Cache de prompt**: DeepSeek, OpenAI, Anthropic e Google oferecem preço reduzido
-  (até ~90% de desconto, ou mais no caso do DeepSeek) para tokens de input repetidos/cacheados.
-  A calculadora sempre usa o preço cheio (cache miss) — o custo real com uso intenso de cache
-  tende a ser bem menor, principalmente em conversas longas ou agentes que reenviam o mesmo
-  contexto a cada chamada.
-- **Preços por contexto longo** (>200k tokens): alguns modelos (Gemini 3.1 Pro, Grok 4.6, etc.)
-  cobram mais quando o prompt passa de 200k tokens — a calculadora usa sempre o preço-base.
+- **Cache de prompt na comparação geral**: a aba “Comparar consumo” continua usando preço
+  cheio. A aba “Contexto & Custo” modela cache para OpenAI, Anthropic e Google como cenário
+  pré-chamada; armazenamento por hora e descontos contratuais continuam fora do total.
+- **Preços por contexto longo**: a aba de contexto aplica as faixas publicadas aos modelos
+  OpenAI GPT-5.6 e Gemini 3.1 Pro. A comparação geral e os demais provedores continuam usando
+  o preço-base.
 - **Diferenças de tokenização**: o mesmo texto pode gerar quantidades diferentes de tokens em
   modelos distintos. A comparação assume o mesmo volume informado em todos os modelos e deve
   ser lida como estimativa. Modelar isso exigiria embutir o tokenizador de cada provedor no

@@ -24,7 +24,7 @@
   <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png" />
   <link rel="icon" href="favicon-16.png" sizes="16x16" type="image/png" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=20260828-context1" />
 </head>
 <body>
   <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -312,6 +312,7 @@
               <label for="contextOutputMin">Mínima<input id="contextOutputMin" type="number" min="0" max="128000" step="100" value="500" /></label>
               <label for="contextOutputLikely">Provável<input id="contextOutputLikely" type="number" min="0" max="128000" step="100" value="1500" /></label>
               <label for="contextOutputMax">Máxima<input id="contextOutputMax" type="number" min="0" max="128000" step="100" value="4000" /></label>
+              <small id="contextOutputNotice" class="context-validation-note" role="status" hidden></small>
             </div>
             <div class="context-range-field">
               <div><label for="contextCachePercent">Contexto lido do cache</label><strong id="contextCacheValue">40%</strong></div>
@@ -350,8 +351,8 @@
           <div class="context-cost-block">
             <span>Custo provável da próxima chamada</span>
             <strong id="contextNextCost">US$ 0,00</strong>
-            <div class="cost-comparison-line"><span>Sem cache</span><strong id="contextNoCacheCost">US$ 0,00</strong></div>
-            <div class="cost-comparison-line"><span>Com cache estimado</span><strong id="contextWithCacheCost">US$ 0,00</strong></div>
+            <div class="cost-comparison-line"><span>Input sem cache</span><strong id="contextNoCacheCost">US$ 0,00</strong></div>
+            <div class="cost-comparison-line"><span>Input com cache estimado</span><strong id="contextWithCacheCost">US$ 0,00</strong></div>
           </div>
 
           <div class="output-cost-list" aria-label="Custos por cenário de saída">
@@ -423,11 +424,11 @@
   </main>
 
   <script src="pricing-status.js"></script>
-  <script src="pricing.js"></script>
-  <script src="calculator.js"></script>
-  <script src="app.js"></script>
-  <script src="context-models.js"></script>
-  <script src="context-calculator.js"></script>
-  <script src="context-app.js"></script>
+  <script src="pricing.js?v=20260828-context1"></script>
+  <script src="calculator.js?v=20260828-context1"></script>
+  <script src="app.js?v=20260828-context1"></script>
+  <script src="context-models.js?v=20260828-context1"></script>
+  <script src="context-calculator.js?v=20260828-context1"></script>
+  <script src="context-app.js?v=20260828-context1"></script>
 </body>
 </html>
