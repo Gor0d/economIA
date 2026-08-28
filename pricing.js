@@ -26,6 +26,7 @@ const PRICING_META = {
     Mistral: "https://mistral.ai/pricing/api/",
     "Moonshot AI": "https://platform.kimi.ai/docs/pricing/chat-k3",
     "Z.ai": "https://docs.z.ai/guides/overview/pricing",
+    Qwen: "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
   },
 };
 
@@ -81,6 +82,11 @@ const PRICING = [
   // ---- Z.ai (Zhipu / GLM) ----
   { id: "glm-5.2", provider: "Z.ai", name: "GLM-5.2", input: 1.40, output: 4.40, note: "Cache hit: US$ 0,26 por 1M tokens de input" },
   { id: "glm-4.6", provider: "Z.ai", name: "GLM-4.6", input: 0.60, output: 2.20, note: "Cache hit: US$ 0,11 por 1M tokens de input" },
+
+  // ---- Qwen (Alibaba Cloud Model Studio) ----
+  // Preco do endpoint internacional (Cingapura); Batch API 50% off documentado.
+  { id: "qwen3.8-max", provider: "Qwen", name: "Qwen3.8 Max", input: 2.00, output: 6.00, batchDiscount: 0.5, note: "Cache hit: US$ 0,20 por 1M tokens de input" },
+  { id: "qwen3.8-flash", provider: "Qwen", name: "Qwen3.8 Flash", input: 0.15, output: 0.47, batchDiscount: 0.5, note: "Cache hit: US$ 0,015 por 1M tokens de input" },
 ];
 
 if (typeof module !== "undefined" && module.exports) {

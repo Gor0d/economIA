@@ -62,6 +62,7 @@ const PROVIDER_LOGOS = {
   Mistral: "assets/logos/mistral.svg",
   "Moonshot AI": "assets/logos/moonshotai.svg",
   "Z.ai": "assets/logos/zdotai.svg",
+  Qwen: "assets/logos/qwen.svg",
 };
 
 function applyTheme(theme, { persist = true } = {}) {
