@@ -30,6 +30,7 @@ const PRICING_META = {
     MiniMax: "https://platform.minimax.io/docs/guides/pricing-paygo.md",
     Cohere: "https://cohere.com/pricing",
     Perplexity: "https://docs.perplexity.ai/getting-started/pricing",
+    Tencent: "https://www.tencent.com/tencent-releases-and-open-sources-tencent-hy4-preview/",
   },
 };
 
@@ -102,6 +103,9 @@ const PRICING = [
   // ---- Perplexity ----
   { id: "perplexity-sonar-pro", provider: "Perplexity", name: "Sonar Pro", input: 3.00, output: 15.00, note: "Soma taxa de US$ 6-14 por 1.000 requisições (busca na web), não incluída aqui" },
   { id: "perplexity-sonar", provider: "Perplexity", name: "Sonar", input: 1.00, output: 1.00, note: "Soma taxa de US$ 5-12 por 1.000 requisições (busca na web), não incluída aqui" },
+
+  // ---- Tencent Hy (antiga Hunyuan) ----
+  { id: "tencent-hy4-preview", provider: "Tencent", name: "Tencent Hy4 Preview", input: 0.834, output: 2.501, note: "Cache hit: US$ 0,042 por 1M tokens; preview open-source, contexto acima de 1M" },
 ];
 
 if (typeof module !== "undefined" && module.exports) {

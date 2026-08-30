@@ -50,3 +50,10 @@ test("Gemini 3.6 Flash usa o preço promocional oficial vigente", () => {
   assert.ok(model, "Gemini 3.6 Flash ausente");
   assert.deepEqual([model.input, model.output, model.batchDiscount], [0.75, 3.75, 0.5]);
 });
+
+test("Tencent Hy4 Preview usa os preços oficiais de lançamento", () => {
+  const model = PRICING.find((item) => item.id === "tencent-hy4-preview");
+  assert.ok(model, "Tencent Hy4 Preview ausente");
+  assert.deepEqual([model.input, model.output], [0.834, 2.501]);
+  assert.match(model.note, /0,042/);
+});

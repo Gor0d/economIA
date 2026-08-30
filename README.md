@@ -8,9 +8,9 @@
 
 Site que responde uma pergunta simples: *"quanto eu gastei, e quanto teria gasto se
 tivesse usado outro modelo?"*. Você informa os tokens de entrada/saída e o modelo usado; a
-calculadora mostra o custo com todos os modelos cadastrados — hoje **41 modelos em 12
+calculadora mostra o custo com todos os modelos cadastrados — hoje **42 modelos em 13
 provedores** (Anthropic, OpenAI, Google, DeepSeek, xAI, Mistral, Moonshot AI, Z.ai,
-Qwen, MiniMax, Cohere e Perplexity) —
+Qwen, MiniMax, Cohere, Perplexity e Tencent) —
 ordenados do mais barato ao mais caro, com a economia (ou o quanto custaria a mais) em
 relação ao que você usou.
 
@@ -222,6 +222,11 @@ atualização (30/08/2026):
 - Mistral: https://mistral.ai/pricing/api/
 - Moonshot AI (Kimi): https://platform.kimi.ai/docs/pricing/chat-k3
 - Z.ai (GLM): https://docs.z.ai/guides/overview/pricing
+- Qwen: https://www.alibabacloud.com/help/en/model-studio/model-pricing
+- MiniMax: https://platform.minimax.io/docs/guides/pricing-paygo.md
+- Cohere: https://cohere.com/pricing
+- Perplexity: https://docs.perplexity.ai/getting-started/pricing
+- Tencent Hy: https://www.tencent.com/tencent-releases-and-open-sources-tencent-hy4-preview/
 
 ## O que a calculadora **não** modela (por simplicidade)
 

@@ -49,9 +49,10 @@ function extractVisibleText(html) {
 // também, direto no HTML bruto (antes de remover as tags).
 function extractPriceSignal(html, visibleText) {
   const plainMatches = visibleText.match(/\$\s?\d[\d,.]*/g) || [];
+  const usdMatches = [...visibleText.matchAll(/\bUSD\s+(\d[\d,.]*)/gi)].map((m) => `$${m[1]}`);
   const rscMatches = [...html.matchAll(/`\$`\s*,\s*`([\d.,]+)`/g)].map((m) => `$${m[1]}`);
-  const all = [...plainMatches, ...rscMatches];
-  return [...new Set(all.map((m) => m.replace(/\s+/g, "").toLowerCase()))].sort();
+  const all = [...plainMatches, ...usdMatches, ...rscMatches];
+  return [...new Set(all.map((m) => m.replace(/\s+/g, "").replace(/,$/, "").toLowerCase()))].sort();
 }
 
 function hashSignal(signal) {
@@ -62,6 +63,7 @@ async function fetchPriceSignal(url) {
   const response = await fetch(url, {
     headers: {
       Accept: "text/html,application/xhtml+xml",
+      "Accept-Language": "en-US,en;q=0.9",
       "User-Agent": "economia-pricing-watch/1.0 (+https://github.com/Gor0d/economIA)",
     },
     redirect: "follow",
