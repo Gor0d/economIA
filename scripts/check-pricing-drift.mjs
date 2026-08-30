@@ -77,10 +77,10 @@ function sleep(ms) {
 }
 
 // Algumas páginas servem uma variação diferente a cada request (cache MISS na
-// primeira chamada, experimento client-side, etc). Buscamos 2x com um
-// intervalo curto e só confiamos no resultado se as duas baterem — senão a
-// checagem desse provedor fica inconclusiva nesta execução (tenta de novo no
-// próximo agendamento) em vez de gerar alarme falso.
+// primeira chamada, experimento client-side, etc). Buscamos 2x; quando elas
+// divergem, fazemos uma terceira leitura e aceitamos apenas a variante que
+// aparecer ao menos duas vezes. Se as três forem diferentes, a checagem fica
+// inconclusiva em vez de gerar alarme falso.
 async function checkProvider(provider, url) {
   try {
     const first = await fetchPriceSignal(url);
@@ -90,7 +90,19 @@ async function checkProvider(provider, url) {
     const secondHash = hashSignal(second);
 
     if (firstHash !== secondHash) {
-      return { provider, url, status: "inconclusive" };
+      await sleep(1500);
+      const third = await fetchPriceSignal(url);
+      const thirdHash = hashSignal(third);
+      const stableHash = thirdHash === firstHash ? firstHash : thirdHash === secondHash ? secondHash : null;
+      if (!stableHash) {
+        if (process.env.PRICING_DEBUG === "1") {
+          console.error(JSON.stringify({ provider, first, second, third }, null, 2));
+        }
+        return { provider, url, status: "inconclusive" };
+      }
+      const stableSignal = stableHash === firstHash ? first : second;
+      if (stableSignal.length === 0) return { provider, url, status: "no-signal" };
+      return { provider, url, status: "ok", hash: stableHash };
     }
     if (first.length === 0) {
       // Página provavelmente renderiza os preços via JS no cliente — um fetch

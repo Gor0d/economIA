@@ -3,7 +3,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
-const { PRICING } = require("../js/pricing.js");
+const { PRICING, PRICING_META } = require("../js/pricing.js");
 const { PRICING_STATUS } = require("../js/pricing-status.js");
 
 function createElement(id = "", dataset = {}) {
@@ -155,7 +155,7 @@ test("interface renderiza, atualiza câmbio e executa o preset", async () => {
   assert.equal(elements.rate.value, "5.1526");
   assert.match(elements.rateStatus.textContent, /Automático/);
   assert.equal(elements.pricingDateTop.textContent, PRICING_STATUS.checkedAt.split("-").reverse().join("/"));
-  assert.equal(elements.pricingDate.textContent, "26/08/2026");
+  assert.equal(elements.pricingDate.textContent, PRICING_META.updatedAt.split("-").reverse().join("/"));
 
   elements.themeToggle.listeners.click();
   assert.equal(elements.themeToggle.attributes["aria-label"], "Ativar modo escuro");

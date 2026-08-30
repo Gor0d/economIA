@@ -44,3 +44,9 @@ test("DeepSeek V4 usa a tabela oficial vigente", () => {
   assert.deepEqual([flash.input, flash.output], [0.14, 0.28]);
   assert.deepEqual([pro.input, pro.output], [0.435, 0.87]);
 });
+
+test("Gemini 3.6 Flash usa o preço promocional oficial vigente", () => {
+  const model = PRICING.find((item) => item.id === "gemini-3.6-flash");
+  assert.ok(model, "Gemini 3.6 Flash ausente");
+  assert.deepEqual([model.input, model.output, model.batchDiscount], [0.75, 3.75, 0.5]);
+});

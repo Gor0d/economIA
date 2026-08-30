@@ -8,7 +8,7 @@
 
 Site que responde uma pergunta simples: *"quanto eu gastei, e quanto teria gasto se
 tivesse usado outro modelo?"*. Você informa os tokens de entrada/saída e o modelo usado; a
-calculadora mostra o custo com todos os modelos cadastrados — hoje **40 modelos em 12
+calculadora mostra o custo com todos os modelos cadastrados — hoje **41 modelos em 12
 provedores** (Anthropic, OpenAI, Google, DeepSeek, xAI, Mistral, Moonshot AI, Z.ai,
 Qwen, MiniMax, Cohere e Perplexity) —
 ordenados do mais barato ao mais caro, com a economia (ou o quanto custaria a mais) em
@@ -212,7 +212,7 @@ foi construído" acima). Cada modelo em `js/pricing.js` é um objeto:
 
 Depois de uma revisão manual (inclusive as disparadas pela Issue automática), atualize
 `PRICING_META.updatedAt` e rode `npm run check`. Fontes oficiais usadas na última
-atualização (26/08/2026):
+atualização (30/08/2026):
 
 - Anthropic (Claude): https://platform.claude.com/docs/en/about-claude/pricing
 - OpenAI: https://developers.openai.com/api/docs/models

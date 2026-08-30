@@ -1,7 +1,7 @@
 /*
  * Tabela de preços das principais APIs de IA (US$ por 1 milhão de tokens).
  * Fonte: páginas oficiais de pricing de cada provedor (ver README.md para os links).
- * Atualizado em: 2026-08-26
+ * Atualizado em: 2026-08-30
  *
  * Para atualizar um preço: edite os campos `input` e `output` do modelo.
  * Para adicionar um modelo novo: copie um objeto existente e ajuste os campos.
@@ -15,7 +15,7 @@
  */
 
 const PRICING_META = {
-  updatedAt: "2026-08-26",
+  updatedAt: "2026-08-30",
   maxAgeDays: 45,
   sources: {
     Anthropic: "https://platform.claude.com/docs/en/about-claude/pricing",
@@ -56,6 +56,7 @@ const PRICING = [
   // ---- Google (Gemini) ----
   // batchDiscount: Batch Mode, 50% off (documentado pelo Google)
   { id: "gemini-3.7-flash", provider: "Google", name: "Gemini 3.7 Flash", input: 0.75, output: 3.75, batchDiscount: 0.5, note: "Preço sobe em jan/2027" },
+  { id: "gemini-3.6-flash", provider: "Google", name: "Gemini 3.6 Flash", input: 0.75, output: 3.75, batchDiscount: 0.5, note: "Preço sobe em jan/2027" },
   { id: "gemini-3.5-flash", provider: "Google", name: "Gemini 3.5 Flash", input: 1.50, output: 9.00, batchDiscount: 0.5 },
   { id: "gemini-3.5-flash-lite", provider: "Google", name: "Gemini 3.5 Flash-Lite", input: 0.30, output: 2.50, batchDiscount: 0.5 },
   { id: "gemini-3.1-pro", provider: "Google", name: "Gemini 3.1 Pro", input: 2.00, output: 12.00, batchDiscount: 0.5, note: "Prompts ≤200k tokens; acima disso dobra" },
