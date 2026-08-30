@@ -8,7 +8,7 @@ const {
   isValidExchangeRate,
   parseTokenValue,
   splitTokenTotal,
-} = require("../calculator.js");
+} = require("../js/calculator.js");
 
 test("interpreta formatos brasileiros e internacionais de tokens", () => {
   const cases = new Map([

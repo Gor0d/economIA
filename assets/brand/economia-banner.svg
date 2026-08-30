@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+  <title id="title">EconomIA</title>
+  <desc id="desc">Compare custos de tokens entre modelos de inteligência artificial.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#081426"/>
+      <stop offset="1" stop-color="#123544"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8aa4ff"/>
+      <stop offset="1" stop-color="#35d4dc"/>
+    </linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#ffffff" stroke-opacity=".035"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="360" rx="24" fill="url(#background)"/>
+  <rect width="1200" height="360" rx="24" fill="url(#grid)"/>
+  <rect x="72" y="64" width="74" height="74" rx="14" fill="none" stroke="#49cfea" stroke-width="3"/>
+  <path d="M95 88h30v7h-22v9h18v7h-18v10h22v7H95z" fill="#f6f8ff"/>
+  <circle cx="124" cy="108" r="4" fill="#55dce0"/>
+  <text x="168" y="118" fill="#f6f8ff" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="48" font-weight="750">Econom<tspan fill="#47d6df">IA</tspan></text>
+  <text x="72" y="215" fill="#f6f8ff" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="54" font-weight="750">Descubra quanto sua IA</text>
+  <text x="72" y="280" fill="url(#accent)" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="54" font-weight="750">realmente custa.</text>
+  <path d="M930 103h172M930 148h124M930 193h198M930 238h82" fill="none" stroke="#67dae2" stroke-linecap="round" stroke-width="14" opacity=".72"/>
+  <circle cx="1091" cy="103" r="10" fill="#8aa4ff"/>
+  <circle cx="1038" cy="148" r="10" fill="#62c4ef"/>
+  <circle cx="1113" cy="193" r="10" fill="#42d4df"/>
+  <circle cx="997" cy="238" r="10" fill="#37e2c1"/>
+</svg>

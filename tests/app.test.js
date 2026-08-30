@@ -3,8 +3,8 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
-const { PRICING } = require("../pricing.js");
-const { PRICING_STATUS } = require("../pricing-status.js");
+const { PRICING } = require("../js/pricing.js");
+const { PRICING_STATUS } = require("../js/pricing-status.js");
 
 function createElement(id = "", dataset = {}) {
   const classes = new Set();
@@ -137,7 +137,7 @@ function createAppContext() {
     clearTimeout,
   });
 
-  for (const file of ["pricing-status.js", "pricing.js", "calculator.js", "app.js"]) {
+  for (const file of ["js/pricing-status.js", "js/pricing.js", "js/calculator.js", "js/app.js"]) {
     const source = fs.readFileSync(path.join(__dirname, "..", file), "utf8");
     vm.runInContext(source, context, { filename: file });
   }

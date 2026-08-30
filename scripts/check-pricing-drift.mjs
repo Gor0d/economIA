@@ -4,7 +4,7 @@
 // causa de scripts de analytics, nonces, banners rotativos etc — testamos e
 // confirmado), extraímos só os valores em dólar (ex: "$3.00") e comparamos
 // esse conjunto com o da última execução. Se mudou, é sinal de que um humano
-// deve revisar pricing.js manualmente — este script nunca edita pricing.js.
+// deve revisar js/pricing.js manualmente — este script nunca edita a tabela.
 import { createRequire } from "node:module";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -12,13 +12,13 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const require = createRequire(import.meta.url);
-const { PRICING_META } = require("../pricing.js");
+const { PRICING_META } = require("../js/pricing.js");
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT_DIR = path.resolve(__dirname, "..");
 const SNAPSHOT_PATH = path.join(__dirname, "pricing-snapshots.json");
 const RESULT_PATH = path.join(__dirname, "pricing-drift-result.json");
-const STATUS_PATH = path.join(ROOT_DIR, "pricing-status.js");
+const STATUS_PATH = path.join(ROOT_DIR, "js", "pricing-status.js");
 
 function loadSnapshots() {
   if (!existsSync(SNAPSHOT_PATH)) return {};

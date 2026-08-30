@@ -1,5 +1,5 @@
-const { PRICING, PRICING_META } = require("../pricing.js");
-const { calcCost, effectiveRates, MAX_TOKENS_PER_SCENARIO } = require("../calculator.js");
+const { PRICING, PRICING_META } = require("../js/pricing.js");
+const { calcCost, effectiveRates, MAX_TOKENS_PER_SCENARIO } = require("../js/calculator.js");
 
 function httpError(status, message, details) {
   const error = new Error(message);

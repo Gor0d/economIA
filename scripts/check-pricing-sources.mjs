@@ -1,7 +1,7 @@
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
-const { PRICING_META } = require("../pricing.js");
+const { PRICING_META } = require("../js/pricing.js");
 
 const results = await Promise.all(
   Object.entries(PRICING_META.sources).map(async ([provider, url]) => {

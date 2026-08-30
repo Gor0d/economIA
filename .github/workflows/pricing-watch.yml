@@ -33,7 +33,7 @@ jobs:
         run: |
           git config user.name "economia-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add scripts/pricing-snapshots.json pricing-status.js
+          git add scripts/pricing-snapshots.json js/pricing-status.js
           if ! git diff --cached --quiet; then
             git commit -m "chore: atualizar snapshot do monitor de precos"
             git push
@@ -48,7 +48,7 @@ jobs:
             const drift = JSON.parse(fs.readFileSync('scripts/pricing-drift-result.json', 'utf8'));
             const testsFailed = '${{ steps.tests.outcome }}' === 'failure';
 
-            const lines = ['O monitor automático encontrou algo que precisa de revisão manual em `pricing.js`.', ''];
+            const lines = ['O monitor automático encontrou algo que precisa de revisão manual em `js/pricing.js`.', ''];
 
             if (testsFailed) {
               lines.push('- ⚠️ **`npm test` falhou** — provavelmente a tabela de preços passou de 45 dias sem revisão, ou algum dado ficou inconsistente. Rode `npm test` localmente pra ver o motivo exato.', '');
@@ -67,7 +67,7 @@ jobs:
               }
               lines.push('');
             }
-            lines.push('Isso não significa necessariamente que o preço mudou — só que a página oficial mudou ou ficou inacessível. Confira e atualize `pricing.js` manualmente se for o caso, depois rode `npm run check`.');
+            lines.push('Isso não significa necessariamente que o preço mudou — só que a página oficial mudou ou ficou inacessível. Confira e atualize `js/pricing.js` manualmente se for o caso, depois rode `npm run check`.');
             const body = lines.join('\n');
 
             const label = 'pricing-watch';
@@ -89,7 +89,7 @@ jobs:
               await github.rest.issues.create({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                title: 'Revisar pricing.js — possível mudança de preço detectada',
+                title: 'Revisar js/pricing.js — possível mudança de preço detectada',
                 body,
                 labels: [label],
               });

@@ -4,7 +4,7 @@
   "private": true,
   "description": "Calculadora estática para comparar custos de tokens entre modelos de IA.",
   "scripts": {
-    "lint": "node --check app.js && node --check calculator.js && node --check context-models.js && node --check context-calculator.js && node --check context-app.js && node --check pricing.js && node --check theme-init.js && node --check api/_comparison.js && node --check api/compare.js && node --check api/models.js && node --check api/mcp.mjs && node --check scripts/check-pricing-drift.mjs && node --check scripts/check-pricing-sources.mjs && node --check scripts/check-static-build.mjs",
+    "lint": "node --check js/app.js && node --check js/calculator.js && node --check js/context-models.js && node --check js/context-calculator.js && node --check js/context-app.js && node --check js/pricing.js && node --check js/theme-init.js && node --check api/_comparison.js && node --check api/compare.js && node --check api/models.js && node --check api/mcp.mjs && node --check scripts/check-pricing-drift.mjs && node --check scripts/check-pricing-sources.mjs && node --check scripts/check-static-build.mjs",
     "test": "node --test",
     "validate:static": "node scripts/check-static-build.mjs",
     "check:sources": "node scripts/check-pricing-sources.mjs",

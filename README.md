@@ -1,11 +1,16 @@
+<p align="center">
+  <img src="assets/brand/economia-banner.svg" alt="EconomIA — descubra quanto sua IA realmente custa" width="100%">
+</p>
+
 # EconomIA — Calculadora de Custo de Tokens de IA
 
 **[economia-calculadora-ia.vercel.app](https://economia-calculadora-ia.vercel.app)**
 
 Site que responde uma pergunta simples: *"quanto eu gastei, e quanto teria gasto se
 tivesse usado outro modelo?"*. Você informa os tokens de entrada/saída e o modelo usado; a
-calculadora mostra o custo com todos os modelos cadastrados — hoje **33 modelos em 8
-provedores** (OpenAI, Anthropic, Google, DeepSeek, xAI, Mistral, Moonshot AI e Z.ai) —
+calculadora mostra o custo com todos os modelos cadastrados — hoje **40 modelos em 12
+provedores** (Anthropic, OpenAI, Google, DeepSeek, xAI, Mistral, Moonshot AI, Z.ai,
+Qwen, MiniMax, Cohere e Perplexity) —
 ordenados do mais barato ao mais caro, com a economia (ou o quanto custaria a mais) em
 relação ao que você usou.
 
@@ -26,14 +31,14 @@ estáticos. Isso significa:
 - Não há chave de API, custo de servidor ou infraestrutura pra manter.
 - A única chamada de rede feita pelo navegador do usuário é para a API pública e gratuita do
   [Frankfurter](https://frankfurter.dev/) (câmbio USD→BRL) — o resto é tudo cálculo local.
-- Sem framework: os arquivos `pricing-status.js` → `pricing.js` → `calculator.js` → `app.js` são carregados na
+- Sem framework: os arquivos `js/pricing-status.js` → `js/pricing.js` → `js/calculator.js` → `js/app.js` são carregados na
   ordem, cada um assumindo que o anterior já rodou (ver `index.html`).
 
 O projeto foi construído em pareamento entre um humano (visão de produto, decisões de
 negócio, testes manuais) e assistentes de IA (Claude Code e Codex) escrevendo o código —
 inclusive esse próprio README.
 
-### Por que os preços ficam em `pricing.js` e não vêm de uma API
+### Por que os preços ficam em `js/pricing.js` e não vêm de uma API
 
 Nenhum provedor de IA expõe uma API pública estável e padronizada de "quanto custa cada
 modelo agora". Em vez de fazer scraping frágil das páginas de pricing em tempo real (o que
@@ -52,8 +57,8 @@ Duas camadas, as duas gratuitas:
    `$3.00`) e compara com o retrato salvo da última execução. Se algo mudou — ou se uma
    página ficou inacessível — abre uma **Issue** no repositório pedindo revisão manual.
    Não usa IA nem chave de API paga: é puramente HTTP + diff de texto. Ele nunca edita
-   `pricing.js` sozinho, só avisa.
-   A cada execução, ele atualiza `pricing-status.js`, que alimenta a data “Monitor executado
+   `js/pricing.js` sozinho, só avisa.
+   A cada execução, ele atualiza `js/pricing-status.js`, que alimenta a data “Monitor executado
    em” mostrada no topo. A data “Tabela revisada em” continua vindo de
    `PRICING_META.updatedAt` e só muda depois de uma conferência humana dos valores.
    - Detalhe que exigiu ajuste: o HTML bruto dessas páginas muda a cada request (scripts de
@@ -162,17 +167,19 @@ A API não exige chave e só lê dados públicos versionados. Antes de divulgaç
 ## Estrutura
 
 - `index.html` — estrutura da página
-- `style.css` — temas claro/escuro, responsividade e animações acessíveis
+- `css/style.css` — temas claro/escuro, responsividade e animações acessíveis
+- `assets/icons/` — favicons e ícone para dispositivos Apple
+- `assets/social/` — imagem usada nos cards de compartilhamento social
 - `assets/logos/` — ícones locais dos provedores exibidos apenas para identificação
 - `assets/brand/` — símbolo e assinaturas horizontais da marca EconomIA para fundos claros e escuros
-- `pricing.js` — **tabela de preços** de cada modelo (US$ por 1M tokens de input/output)
-- `pricing-status.js` — data da última execução do monitor, gerada pelo workflow diário
-- `calculator.js` — parser e funções puras de cálculo, compartilhadas pelo site e pelos testes
-- `app.js` — lógica de interface e renderização
-- `context-models.js` — catálogo de contexto, cache, janelas e faixas de preço
-- `context-calculator.js` — tokenização aproximada e funções puras de custo/projeção
-- `context-app.js` — estado e renderização da aba “Contexto & Custo”
-- `theme-init.js` — detecção de tema (script externo, exigido pela CSP sem `unsafe-inline`)
+- `js/pricing.js` — **tabela de preços** de cada modelo (US$ por 1M tokens de input/output)
+- `js/pricing-status.js` — data da última execução do monitor, gerada pelo workflow diário
+- `js/calculator.js` — parser e funções puras de cálculo, compartilhadas pelo site e pelos testes
+- `js/app.js` — lógica de interface e renderização
+- `js/context-models.js` — catálogo de contexto, cache, janelas e faixas de preço
+- `js/context-calculator.js` — tokenização aproximada e funções puras de custo/projeção
+- `js/context-app.js` — estado e renderização da aba “Contexto & Custo”
+- `js/theme-init.js` — detecção de tema (script externo, exigido pela CSP sem `unsafe-inline`)
 - `vercel.json` — headers de segurança do deploy
 - `scripts/check-pricing-sources.mjs` — confirma que as páginas oficiais respondem
 - `scripts/check-pricing-drift.mjs` — monitor de mudança de preço (ver acima)
@@ -187,7 +194,7 @@ e logos pertencem aos respectivos proprietários e não indicam parceria ou endo
 ## Atualizando os preços
 
 Os provedores não oferecem uma API oficial única e estável para todos os preços (ver "Como
-foi construído" acima). Cada modelo em `pricing.js` é um objeto:
+foi construído" acima). Cada modelo em `js/pricing.js` é um objeto:
 
 ```js
 { id, provider, name, input, output, batchDiscount, note }

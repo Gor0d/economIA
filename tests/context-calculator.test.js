@@ -1,8 +1,8 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 
-const { CONTEXT_MODELS, CONTEXT_PRICING_META } = require("../context-models.js");
-const { PRICING } = require("../pricing.js");
+const { CONTEXT_MODELS, CONTEXT_PRICING_META } = require("../js/context-models.js");
+const { PRICING } = require("../js/pricing.js");
 const {
   buildRecommendations,
   costFromActualUsage,
@@ -11,7 +11,7 @@ const {
   estimateTextTokens,
   normalizeActualUsage,
   projectConversation,
-} = require("../context-calculator.js");
+} = require("../js/context-calculator.js");
 
 function model(id) {
   return CONTEXT_MODELS.find((item) => item.id === id);

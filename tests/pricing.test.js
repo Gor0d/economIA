@@ -1,7 +1,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 
-const { PRICING, PRICING_META } = require("../pricing.js");
+const { PRICING, PRICING_META } = require("../js/pricing.js");
 
 test("tabela possui modelos válidos e IDs únicos", () => {
   assert.ok(PRICING.length >= 25);
