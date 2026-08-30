@@ -4,7 +4,7 @@
 
 # EconomIA — Calculadora de Custo de Tokens de IA
 
-**[economia-calculadora-ia.vercel.app](https://economia-calculadora-ia.vercel.app)**
+**[economia-calculadora.vercel.app](https://economia-calculadora.vercel.app)**
 
 Site que responde uma pergunta simples: *"quanto eu gastei, e quanto teria gasto se
 tivesse usado outro modelo?"*. Você informa os tokens de entrada/saída e o modelo usado; a
@@ -149,7 +149,7 @@ O mesmo catálogo agora é exposto por funções serverless da Vercel:
 Exemplo:
 
 ```bash
-curl -X POST https://economia-calculadora-ia.vercel.app/api/compare \
+curl -X POST https://economia-calculadora.vercel.app/api/compare \
   -H "Content-Type: application/json" \
   -d '{"inputTokens":1000000,"outputTokens":100000,"baselineModelId":"gpt-5"}'
 ```
@@ -157,7 +157,7 @@ curl -X POST https://economia-calculadora-ia.vercel.app/api/compare \
 No Claude Code, depois do deploy:
 
 ```bash
-claude mcp add --transport http economia https://economia-calculadora-ia.vercel.app/api/mcp
+claude mcp add --transport http economia https://economia-calculadora.vercel.app/api/mcp
 ```
 
 No ChatGPT, adicione a mesma URL como conector MCP personalizado (quando disponível no seu plano/workspace). No Codex, o plugin versionado está em `.agents/plugins/plugins/economia-price-comparator`; instale primeiro o marketplace local `.agents/plugins` e depois o plugin `economia-price-comparator@economia`.

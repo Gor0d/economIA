@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Compara custos de tokens entre modelos e provedores de IA.",
   "author": { "name": "EconomIA" },
-  "homepage": "https://economia-calculadora-ia.vercel.app/",
+  "homepage": "https://economia-calculadora.vercel.app/",
   "mcpServers": "./.mcp.json",
   "skills": "./skills/",
   "interface": {
@@ -13,7 +13,7 @@
     "developerName": "EconomIA",
     "category": "Developer Tools",
     "capabilities": ["Read"],
-    "websiteURL": "https://economia-calculadora-ia.vercel.app/",
+    "websiteURL": "https://economia-calculadora.vercel.app/",
     "defaultPrompt": [
       "Compare o custo de 1M tokens de entrada e 100k de saída.",
       "Qual modelo é mais barato para este consumo?",

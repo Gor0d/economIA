@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "description": "Compara custos de tokens entre modelos de IA com uma tabela versionada e auditável."
   },
-  "servers": [{ "url": "https://economia-calculadora-ia.vercel.app" }],
+  "servers": [{ "url": "https://economia-calculadora.vercel.app" }],
   "paths": {
     "/api/models": {
       "get": {
