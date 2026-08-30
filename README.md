@@ -16,10 +16,15 @@ relação ao que você usou.
 
 ## Origem
 
-O projeto nasceu de um post no LinkedIn de alguém relatando ter gasto **382 milhões de
-tokens em 5 dias só na DeepSeek**. A pergunta óbvia — "isso seria mais barato em outro
-modelo?" — não tinha resposta rápida em lugar nenhum, então virou esse site. Esse número
-(382M) é o exemplo pré-carregado no botão "Usar exemplo de 382M tokens".
+O projeto nasceu de um problema recorrente: entender quanto o consumo de tokens realmente
+custa e comparar esse valor entre modelos e provedores diferentes. O gatilho específico veio
+de um [post de Will Dobrev no X](https://x.com/WillDobrev) sobre uma calculadora para pesquisar
+esses custos. A ideia evoluiu para uma ferramenta que recebe o consumo uma única vez e mostra
+quanto o mesmo volume custaria em cada modelo disponível.
+
+O exemplo de **382 milhões de tokens**, disponível no botão "Usar exemplo de 382M tokens",
+permanece como um cenário prático para visualizar como pequenas diferenças de preço crescem
+em grandes volumes.
 
 ## Como foi construído
 
