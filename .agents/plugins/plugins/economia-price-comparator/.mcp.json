@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "economia": {
+      "type": "http",
+      "url": "https://economia-calculadora-ia.vercel.app/api/mcp"
+    }
+  }
+}

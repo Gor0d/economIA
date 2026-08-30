@@ -132,6 +132,33 @@ X-Frame-Options etc.). Por ser uma pasta estática, também funciona em:
 - **GitHub Pages**: suba este repositório e ative Pages apontando pra `main` / raiz.
 - **Netlify**: importe o repo, sem build command (é HTML puro).
 
+## API pública e integrações com assistentes
+
+O mesmo catálogo agora é exposto por funções serverless da Vercel:
+
+- `GET /api/models` — lista o catálogo; aceita `?provider=OpenAI`.
+- `POST /api/compare` — compara custos com `inputTokens`, `outputTokens`, `baselineModelId` opcional e `batch` opcional.
+- `POST /api/mcp` — servidor MCP remoto (Streamable HTTP) com as ferramentas `compare_ai_model_prices` e `list_ai_models`.
+- `/openapi.json` — contrato REST para integrações que aceitam OpenAPI.
+
+Exemplo:
+
+```bash
+curl -X POST https://economia-calculadora-ia.vercel.app/api/compare \
+  -H "Content-Type: application/json" \
+  -d '{"inputTokens":1000000,"outputTokens":100000,"baselineModelId":"gpt-5"}'
+```
+
+No Claude Code, depois do deploy:
+
+```bash
+claude mcp add --transport http economia https://economia-calculadora-ia.vercel.app/api/mcp
+```
+
+No ChatGPT, adicione a mesma URL como conector MCP personalizado (quando disponível no seu plano/workspace). No Codex, o plugin versionado está em `.agents/plugins/plugins/economia-price-comparator`; instale primeiro o marketplace local `.agents/plugins` e depois o plugin `economia-price-comparator@economia`.
+
+A API não exige chave e só lê dados públicos versionados. Antes de divulgação ampla, considere rate limiting e publique política de privacidade/termos; esses links são normalmente necessários para distribuição pública em catálogos.
+
 ## Estrutura
 
 - `index.html` — estrutura da página

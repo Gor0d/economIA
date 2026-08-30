@@ -1,0 +1,12 @@
+{
+  "name": "economia",
+  "interface": { "displayName": "EconomIA" },
+  "plugins": [
+    {
+      "name": "economia-price-comparator",
+      "source": { "source": "local", "path": "./plugins/economia-price-comparator" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
+      "category": "Developer Tools"
+    }
+  ]
+}

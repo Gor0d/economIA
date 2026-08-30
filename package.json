@@ -4,12 +4,17 @@
   "private": true,
   "description": "Calculadora estática para comparar custos de tokens entre modelos de IA.",
   "scripts": {
-    "lint": "node --check app.js && node --check calculator.js && node --check context-models.js && node --check context-calculator.js && node --check context-app.js && node --check pricing.js && node --check theme-init.js && node --check scripts/check-pricing-drift.mjs && node --check scripts/check-pricing-sources.mjs && node --check scripts/check-static-build.mjs",
+    "lint": "node --check app.js && node --check calculator.js && node --check context-models.js && node --check context-calculator.js && node --check context-app.js && node --check pricing.js && node --check theme-init.js && node --check api/_comparison.js && node --check api/compare.js && node --check api/models.js && node --check api/mcp.mjs && node --check scripts/check-pricing-drift.mjs && node --check scripts/check-pricing-sources.mjs && node --check scripts/check-static-build.mjs",
     "test": "node --test",
     "validate:static": "node scripts/check-static-build.mjs",
     "check:sources": "node scripts/check-pricing-sources.mjs",
     "check:drift": "node scripts/check-pricing-drift.mjs",
     "check": "npm run lint && npm test && npm run validate:static && npm run check:sources"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/node": "^2.0.0",
+    "@modelcontextprotocol/server": "^2.0.0",
+    "zod": "^4.5.4"
   },
   "engines": {
     "node": ">=20"

@@ -1,0 +1,24 @@
+{
+  "name": "economia-price-comparator",
+  "version": "1.0.0",
+  "description": "Compara custos de tokens entre modelos e provedores de IA.",
+  "author": { "name": "EconomIA" },
+  "homepage": "https://economia-calculadora-ia.vercel.app/",
+  "mcpServers": "./.mcp.json",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "EconomIA — Comparador de preços",
+    "shortDescription": "Compare custos de tokens entre modelos de IA",
+    "longDescription": "Consulta a tabela auditável da EconomIA e compara o custo do mesmo consumo de tokens entre modelos e provedores.",
+    "developerName": "EconomIA",
+    "category": "Developer Tools",
+    "capabilities": ["Read"],
+    "websiteURL": "https://economia-calculadora-ia.vercel.app/",
+    "defaultPrompt": [
+      "Compare o custo de 1M tokens de entrada e 100k de saída.",
+      "Qual modelo é mais barato para este consumo?",
+      "Quanto economizo trocando de modelo?"
+    ],
+    "brandColor": "#16A085"
+  }
+}

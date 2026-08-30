@@ -1,0 +1,45 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "EconomIA Price Comparison API",
+    "version": "1.0.0",
+    "description": "Compara custos de tokens entre modelos de IA com uma tabela versionada e auditável."
+  },
+  "servers": [{ "url": "https://economia-calculadora-ia.vercel.app" }],
+  "paths": {
+    "/api/models": {
+      "get": {
+        "operationId": "listModels",
+        "summary": "Lista modelos e preços",
+        "parameters": [{ "name": "provider", "in": "query", "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Catálogo atual" } }
+      }
+    },
+    "/api/compare": {
+      "post": {
+        "operationId": "compareModelPrices",
+        "summary": "Compara custos para um consumo de tokens",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ComparisonInput" } } }
+        },
+        "responses": { "200": { "description": "Comparação ordenada pelo menor custo" }, "400": { "description": "Entrada inválida" } }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ComparisonInput": {
+        "type": "object",
+        "required": ["inputTokens", "outputTokens"],
+        "properties": {
+          "inputTokens": { "type": "number", "minimum": 0, "maximum": 1000000000000 },
+          "outputTokens": { "type": "number", "minimum": 0, "maximum": 1000000000000 },
+          "baselineModelId": { "type": "string" },
+          "batch": { "type": "boolean", "default": false }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}
