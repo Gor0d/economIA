@@ -37,7 +37,7 @@ const PRICING_META = {
 const PRICING = [
   // ---- Anthropic (Claude) ----
   // batchDiscount: Message Batches API, 50% off (documentado pela Anthropic)
-  { id: "claude-fable-5", provider: "Anthropic", name: "Claude Fable 5", input: 10.00, output: 50.00, batchDiscount: 0.5, note: "Modelo mais capaz da Anthropic" },
+  { id: "claude-fable-5.1", provider: "Anthropic", name: "Claude Fable 5.1", input: 10.00, output: 50.00, batchDiscount: 0.5, note: "Cache hit: US$ 0,25 por 1M (era US$ 1,00 na Fable 5)" },
   { id: "claude-opus-5", provider: "Anthropic", name: "Claude Opus 5", input: 5.00, output: 25.00, batchDiscount: 0.5 },
   { id: "claude-sonnet-5", provider: "Anthropic", name: "Claude Sonnet 5", input: 2.00, output: 10.00, batchDiscount: 0.5 },
   { id: "claude-haiku-4-5", provider: "Anthropic", name: "Claude Haiku 4.5", input: 1.00, output: 5.00, batchDiscount: 0.5 },
