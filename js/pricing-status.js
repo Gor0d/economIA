@@ -1,6 +1,6 @@
 const PRICING_STATUS = Object.freeze({
-  checkedAt: "2026-09-08",
-  status: "attention",
+  checkedAt: "2026-09-09",
+  status: "ok",
 });
 
 if (typeof module !== "undefined" && module.exports) {
