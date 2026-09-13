@@ -22,6 +22,8 @@
     outputNotice: document.getElementById("contextOutputNotice"),
     cachePercent: document.getElementById("contextCachePercent"),
     cacheValue: document.getElementById("contextCacheValue"),
+    cacheWritePercent: document.getElementById("contextCacheWritePercent"),
+    cacheWriteValue: document.getElementById("contextCacheWriteValue"),
     futureTurns: document.getElementById("contextFutureTurns"),
     currency: document.getElementById("contextCurrency"),
     rate: document.getElementById("contextRate"),
@@ -151,7 +153,7 @@
       .join("");
   }
 
-  function renderProjections({ model, inputTokens, outputLikely, currentPromptTokens, cachePercent, customTurns }) {
+  function renderProjections({ model, inputTokens, outputLikely, currentPromptTokens, cachePercent, cacheWritePercent, customTurns }) {
     const milestones = [1, 10, 50, 100];
     const projections = milestones.map((turns) =>
       projectConversation({
@@ -160,6 +162,7 @@
         probableOutputTokens: outputLikely,
         nextPromptTokens: currentPromptTokens,
         cachePercent,
+        cacheWritePercent,
         turns,
       })
     );
@@ -180,6 +183,7 @@
       probableOutputTokens: outputLikely,
       nextPromptTokens: currentPromptTokens,
       cachePercent,
+      cacheWritePercent,
       turns: customTurns,
     });
     els.customProjection.textContent = `${custom.turns} ${custom.turns === 1 ? "turno" : "turnos"} · ${displayMoney(custom.totalCost)}`;
@@ -187,13 +191,14 @@
     return custom;
   }
 
-  function renderComparison({ sections, outputLikely, cachePercent, customTurns }) {
+  function renderComparison({ sections, outputLikely, cachePercent, cacheWritePercent, customTurns }) {
     els.comparisonRows.innerHTML = CONTEXT_MODELS.map((model) => {
       const tokenEstimate = estimateSections(sections, model.provider);
       const call = estimateOutputScenarios({
         model,
         inputTokens: tokenEstimate.total,
         cachePercent,
+        cacheWritePercent,
         minimum: outputLikely,
         probable: outputLikely,
         maximum: outputLikely,
@@ -204,6 +209,7 @@
         probableOutputTokens: outputLikely,
         nextPromptTokens: tokenEstimate.sections.current,
         cachePercent,
+        cacheWritePercent,
         turns: customTurns,
       });
       const rates = effectiveRates(model, tokenEstimate.total);
@@ -285,6 +291,7 @@
     const outputLikely = parseNonNegative(els.outputLikely, outputMin);
     const outputMax = parseNonNegative(els.outputMax, outputLikely);
     const cachePercent = Number(els.cachePercent.value);
+    const cacheWritePercent = model.cacheWrite === null ? 0 : Number(els.cacheWritePercent.value);
     const customTurns = Math.min(100, Math.max(1, Math.round(parseNonNegative(els.futureTurns, 1))));
     const rateValid = els.currency.value !== "BRL" || isValidExchangeRate(Number(els.rate.value));
     els.rate.setAttribute("aria-invalid", String(!rateValid));
@@ -301,6 +308,8 @@
       : `A saída máxima publicada para ${model.name} é ${formatNumber(model.maxOutput)} tokens.`;
     els.rateField.hidden = els.currency.value !== "BRL";
     els.cacheValue.textContent = `${cachePercent}%`;
+    els.cacheWritePercent.disabled = model.cacheWrite === null;
+    els.cacheWriteValue.textContent = model.cacheWrite === null ? "Não aplicável" : `${cacheWritePercent}%`;
 
     sectionConfig.forEach(({ key, count }) => {
       count.textContent = formatNumber(tokenEstimate.sections[key]);
@@ -310,6 +319,7 @@
       model,
       inputTokens: tokenEstimate.total,
       cachePercent,
+      cacheWritePercent,
       minimum: outputMin,
       probable: outputLikely,
       maximum: outputMax,
@@ -351,9 +361,10 @@
       outputLikely,
       currentPromptTokens: tokenEstimate.sections.current,
       cachePercent,
+      cacheWritePercent,
       customTurns,
     });
-    renderComparison({ sections, outputLikely, cachePercent, customTurns });
+    renderComparison({ sections, outputLikely, cachePercent, cacheWritePercent, customTurns });
     renderRecommendations(
       buildRecommendations({
         sectionTokens: tokenEstimate.sections,
@@ -386,6 +397,7 @@
     els.outputLikely,
     els.outputMax,
     els.cachePercent,
+    els.cacheWritePercent,
     els.futureTurns,
     els.currency,
     els.rate,

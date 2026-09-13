@@ -5,6 +5,7 @@ import * as z from "zod/v4";
 
 const require = createRequire(import.meta.url);
 const { comparePrices, listModels } = require("./_comparison.js");
+const { guardRequest } = require("./_http.js");
 
 function buildServer() {
   const server = new McpServer({ name: "economia-price-comparator", version: "1.0.0" });
@@ -16,6 +17,8 @@ function buildServer() {
       outputTokens: z.number().nonnegative().max(1e12).describe("Tokens de saída"),
       baselineModelId: z.string().optional().describe("ID opcional do modelo usado para calcular economia"),
       batch: z.boolean().optional().default(false).describe("Aplicar Batch API quando disponível"),
+      provider: z.string().optional().describe("Filtrar por um provedor, como OpenAI ou Anthropic"),
+      limit: z.number().int().min(1).max(46).optional().describe("Limitar a quantidade de resultados para reduzir a resposta"),
     }),
     annotations: { readOnlyHint: true, openWorldHint: false },
   }, async (args) => {
@@ -42,8 +45,9 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, GET, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept, Mcp-Session-Id, Last-Event-ID");
-  res.setHeader("Access-Control-Expose-Headers", "Mcp-Session-Id");
+  res.setHeader("Access-Control-Expose-Headers", "Mcp-Session-Id, RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset, Retry-After");
   if (req.method === "OPTIONS") return res.status(204).end();
+  if (!guardRequest(req, res, { limit: 60, maxBytes: 65_536, scope: "mcp" })) return;
 
   const server = buildServer();
   const transport = new NodeStreamableHTTPServerTransport({

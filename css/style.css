@@ -257,6 +257,16 @@ a:focus-visible {
   box-shadow: 0 0 0 4px rgba(84, 230, 165, 0.09), 0 0 16px rgba(84, 230, 165, 0.55);
 }
 
+.data-status[data-status="attention"] .status-dot {
+  background: var(--bad);
+  box-shadow: 0 0 0 4px rgba(255, 100, 100, 0.09), 0 0 16px rgba(255, 100, 100, 0.5);
+}
+
+.data-status[data-status="partial"] .status-dot {
+  background: #e8ad45;
+  box-shadow: 0 0 0 4px rgba(255, 190, 90, 0.09), 0 0 16px rgba(255, 190, 90, 0.45);
+}
+
 .hero {
   max-width: 850px;
   margin: 0 auto;
@@ -1907,6 +1917,38 @@ footer a {
   color: var(--text-soft);
   text-decoration-color: rgba(195, 208, 223, 0.32);
   text-underline-offset: 3px;
+}
+
+.result-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.result-actions .ghost-button {
+  min-height: 42px;
+  white-space: nowrap;
+}
+
+.legal-page {
+  max-width: 900px;
+}
+
+.legal-page article {
+  margin-top: 64px;
+  padding: clamp(24px, 5vw, 52px);
+}
+
+.legal-page h1 {
+  margin-top: 0;
+  color: var(--text);
+  font-size: clamp(2rem, 6vw, 3.5rem);
+}
+
+.legal-page h2 {
+  margin: 28px 0 8px;
+  color: var(--text-soft);
+  font-size: 1.05rem;
 }
 
 @media (max-width: 920px) {

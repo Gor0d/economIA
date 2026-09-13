@@ -50,18 +50,24 @@
     };
   }
 
-  function estimateCall({ model, inputTokens, outputTokens, cachePercent = 0 }) {
+  function estimateCall({ model, inputTokens, outputTokens, cachePercent = 0, cacheWritePercent = 0 }) {
     const safeInput = Math.max(0, Number(inputTokens) || 0);
     const safeOutput = Math.max(0, Number(outputTokens) || 0);
     const safeCachePercent = clamp(Number(cachePercent) || 0, 0, 100);
+    const safeCacheWritePercent = clamp(Number(cacheWritePercent) || 0, 0, 100);
     const cachedTokens = Math.round(safeInput * (safeCachePercent / 100));
     const uncachedTokens = safeInput - cachedTokens;
     const rates = effectiveRates(model, safeInput);
+    const cacheWriteTokens = rates.cacheWrite === null
+      ? 0
+      : Math.round(uncachedTokens * (safeCacheWritePercent / 100));
+    const freshTokens = uncachedTokens - cacheWriteTokens;
 
     const costWithoutCache = (safeInput * rates.input) / 1_000_000;
     const cacheReadCost = (cachedTokens * rates.cachedInput) / 1_000_000;
-    const uncachedRate = rates.cacheWrite ?? rates.input;
-    const uncachedCost = (uncachedTokens * uncachedRate) / 1_000_000;
+    const cacheWriteCost = (cacheWriteTokens * (rates.cacheWrite ?? rates.input)) / 1_000_000;
+    const freshCost = (freshTokens * rates.input) / 1_000_000;
+    const uncachedCost = cacheWriteCost + freshCost;
     const costWithCache = cacheReadCost + uncachedCost;
     const outputCost = (safeOutput * rates.output) / 1_000_000;
 
@@ -70,9 +76,12 @@
       outputTokens: safeOutput,
       cachedTokens,
       uncachedTokens,
-      cacheWriteTokens: rates.cacheWrite === null ? 0 : uncachedTokens,
+      cacheWriteTokens,
+      freshTokens,
       costWithoutCache,
       cacheReadCost,
+      cacheWriteCost,
+      freshCost,
       uncachedCost,
       costWithCache,
       outputCost,
@@ -83,15 +92,15 @@
     };
   }
 
-  function estimateOutputScenarios({ model, inputTokens, cachePercent, minimum, probable, maximum }) {
+  function estimateOutputScenarios({ model, inputTokens, cachePercent, cacheWritePercent, minimum, probable, maximum }) {
     return {
-      minimum: estimateCall({ model, inputTokens, cachePercent, outputTokens: minimum }),
-      probable: estimateCall({ model, inputTokens, cachePercent, outputTokens: probable }),
-      maximum: estimateCall({ model, inputTokens, cachePercent, outputTokens: maximum }),
+      minimum: estimateCall({ model, inputTokens, cachePercent, cacheWritePercent, outputTokens: minimum }),
+      probable: estimateCall({ model, inputTokens, cachePercent, cacheWritePercent, outputTokens: probable }),
+      maximum: estimateCall({ model, inputTokens, cachePercent, cacheWritePercent, outputTokens: maximum }),
     };
   }
 
-  function projectConversation({ model, baseInputTokens, probableOutputTokens, nextPromptTokens, cachePercent, turns }) {
+  function projectConversation({ model, baseInputTokens, probableOutputTokens, nextPromptTokens, cachePercent, cacheWritePercent, turns }) {
     const totalTurns = clamp(Math.round(Number(turns) || 1), 1, 100);
     const growthPerTurn = Math.max(0, Number(probableOutputTokens) || 0) + Math.max(0, Number(nextPromptTokens) || 0);
     let totalCost = 0;
@@ -105,6 +114,7 @@
         inputTokens: lastInputTokens,
         outputTokens: probableOutputTokens,
         cachePercent,
+        cacheWritePercent,
       });
       totalCost += estimate.totalWithCache;
       if (crossedContextAt === null && lastInputTokens > model.contextWindow) crossedContextAt = turn;

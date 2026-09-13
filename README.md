@@ -63,7 +63,8 @@ Duas camadas, as duas gratuitas:
    `$3.00`) e compara com o retrato salvo da última execução. Se algo mudou — ou se uma
    página ficou inacessível — abre uma **Issue** no repositório pedindo revisão manual.
    Não usa IA nem chave de API paga: é puramente HTTP + diff de texto. Ele nunca edita
-   `js/pricing.js` sozinho, só avisa.
+   `js/pricing.js` sozinho, só avisa. Uma mudança fica marcada como pendente em todas as
+   execuções seguintes; o monitor não transforma o novo HTML em baseline silenciosamente.
    A cada execução, ele atualiza `js/pricing-status.js`, que alimenta a data “Monitor executado
    em” mostrada no topo. A data “Tabela revisada em” continua vindo de
    `PRICING_META.updatedAt` e só muda depois de uma conferência humana dos valores.
@@ -86,6 +87,7 @@ Rodar manualmente:
 ```bash
 npm run check:sources   # confirma que as páginas oficiais respondem
 npm run check:drift     # compara com o retrato salvo e mostra o que mudou
+npm run accept:drift    # após revisar preços/fontes, aceita os sinais atuais como nova baseline
 ```
 
 ## Funcionalidades
@@ -110,6 +112,8 @@ npm run check:drift     # compara com o retrato salvo e mostra o que mudou
   escolha), atalhos de entrada até `1T` e teto de 1 trilhão de tokens por cenário. Acima
   disso, o site orienta dividir o volume por período ou projeto para preservar uma comparação
   legível e útil.
+- **Compartilhamento e exportação**: copia um resumo dos cinco menores custos e baixa o ranking
+  completo em CSV para análise ou envio ao time.
 
 ## Como rodar
 
@@ -124,7 +128,7 @@ python -m http.server 8000
 
 ## Testes e validações
 
-É necessário Node.js 20 ou superior. Não há dependências para instalar:
+É necessário Node.js 20 ou superior. Instale as dependências com `npm install` e rode:
 
 ```bash
 npm run lint           # análise sintática de todos os arquivos JS/MJS
@@ -132,6 +136,7 @@ npm test               # cálculos, contexto, cache, projeções e integridade d
 npm run validate:static # valida referências e estrutura do pacote estático (não é build de verdade)
 npm run check:sources  # confirma que as páginas oficiais cadastradas continuam acessíveis
 npm run check:drift    # compara as páginas com o retrato salvo (usado pelo monitor diário)
+npm run accept:drift   # aceita uma mudança já revisada e permite encerrar o alerta
 npm run check          # lint + test + validate:static + check:sources
 ```
 
@@ -148,7 +153,7 @@ X-Frame-Options etc.). Por ser uma pasta estática, também funciona em:
 O mesmo catálogo agora é exposto por funções serverless da Vercel:
 
 - `GET /api/models` — lista o catálogo; aceita `?provider=OpenAI`.
-- `POST /api/compare` — compara custos com `inputTokens`, `outputTokens`, `baselineModelId` opcional e `batch` opcional.
+- `POST /api/compare` — compara custos com `inputTokens`, `outputTokens`, `baselineModelId` e `batch` opcionais; `provider` e `limit` reduzem a resposta para integrações com IA.
 - `POST /api/mcp` — servidor MCP remoto (Streamable HTTP) com as ferramentas `compare_ai_model_prices` e `list_ai_models`.
 - `/openapi.json` — contrato REST para integrações que aceitam OpenAPI.
 
@@ -157,8 +162,13 @@ Exemplo:
 ```bash
 curl -X POST https://economia-calculadora.vercel.app/api/compare \
   -H "Content-Type: application/json" \
-  -d '{"inputTokens":1000000,"outputTokens":100000,"baselineModelId":"gpt-5"}'
+  -d '{"inputTokens":1000000,"outputTokens":100000,"baselineModelId":"gpt-5","limit":5}'
 ```
+
+As rotas aplicam limite de corpo e um rate limit de melhor esforço por instância serverless,
+informado nos headers `RateLimit-*`. Em tráfego elevado, complemente essa proteção com o
+Firewall da Vercel ou um armazenamento distribuído. Consulte também a
+[política de privacidade](privacy.html) e os [termos de uso](terms.html).
 
 No Claude Code, depois do deploy:
 
@@ -212,7 +222,8 @@ foi construído" acima). Cada modelo em `js/pricing.js` é um objeto:
 - `note`: observação curta (contexto longo, cache, preço promocional etc.).
 
 Depois de uma revisão manual (inclusive as disparadas pela Issue automática), atualize
-`PRICING_META.updatedAt` e rode `npm run check`. Fontes oficiais usadas na última
+`PRICING_META.updatedAt`, rode `npm run check` e finalize com `npm run accept:drift` para
+registrar a nova baseline. Fontes oficiais usadas na última
 atualização (13/09/2026):
 
 - Anthropic (Claude): https://platform.claude.com/docs/en/about-claude/pricing

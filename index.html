@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Compare o custo de tokens entre os principais modelos de IA, em dólar ou real." />
+  <meta name="description" content="Compare gratuitamente custos de tokens entre 46 modelos de IA de 13 provedores, em dólar ou real." />
+  <link rel="canonical" href="https://economia-calculadora.vercel.app/" />
+  <link rel="manifest" href="manifest.webmanifest" />
   <meta id="themeColor" name="theme-color" content="#07111f" />
   <title>EconomIA / Compare custos de modelos de IA</title>
 
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://economia-calculadora.vercel.app/" />
   <meta property="og:title" content="EconomIA: descubra quanto sua IA realmente custa" />
-  <meta property="og:description" content="Compare o custo de tokens entre OpenAI, Anthropic, Google, DeepSeek, xAI, Mistral, Moonshot AI e Z.ai. Veja quanto você economizaria trocando de modelo." />
+  <meta property="og:description" content="Compare gratuitamente o custo de tokens entre 46 modelos de IA de 13 provedores e descubra quanto pode economizar." />
   <meta property="og:image" content="https://economia-calculadora.vercel.app/assets/social/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -24,7 +26,7 @@
   <link rel="icon" href="assets/icons/favicon-32.png" sizes="32x32" type="image/png" />
   <link rel="icon" href="assets/icons/favicon-16.png" sizes="16x16" type="image/png" />
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
-  <link rel="stylesheet" href="css/style.css?v=20260830-structure1" />
+  <link rel="stylesheet" href="css/style.css?v=20260913-review1" />
 </head>
 <body>
   <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -37,9 +39,9 @@
         <span class="brand-word">Econom<span class="brand-ia">IA</span></span>
       </a>
       <div class="topbar-actions">
-        <div class="data-status">
+        <div id="pricingStatus" class="data-status">
           <span class="status-dot" aria-hidden="true"></span>
-          Monitor executado em <span id="pricingDateTop">27/08/2026</span>
+          <span id="pricingStatusLabel">Monitor executado em</span> <span id="pricingDateTop">13/09/2026</span>
         </div>
         <button id="themeToggle" class="theme-toggle" type="button" aria-label="Ativar modo claro" title="Alternar tema">
           <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"/></svg>
@@ -49,7 +51,7 @@
     </nav>
 
     <header id="top" class="hero">
-      <div class="eyebrow"><span><span id="modelCountBadge">35</span> modelos</span><span><span id="providerCountBadge">9</span> provedores</span><span>Câmbio automático</span></div>
+      <div class="eyebrow"><span><span id="modelCountBadge">46</span> modelos</span><span><span id="providerCountBadge">13</span> provedores</span><span>Câmbio automático</span></div>
       <h1>Descubra quanto sua IA <span>realmente custa.</span></h1>
       <p>Informe seu consumo uma vez. Compare OpenAI, Anthropic, Google e outros <span id="otherProvidersCount">6</span> provedores líderes de IA lado a lado.</p>
       <div id="providerCloud" class="provider-cloud" aria-label="Provedores comparados"></div>
@@ -200,7 +202,7 @@
           <h2 id="resultsTitle">Ranking de custo</h2>
           <p>Do modelo mais econômico ao mais caro para o mesmo volume.</p>
         </div>
-        <span id="resultCount" class="result-count">35 modelos</span>
+        <span id="resultCount" class="result-count">46 modelos</span>
       </div>
 
       <div class="results-toolbar">
@@ -213,6 +215,10 @@
         <select id="providerFilter">
           <option value="">Todos os provedores</option>
         </select>
+        <div class="result-actions" aria-label="Compartilhar resultados">
+          <button id="copyComparisonBtn" class="ghost-button" type="button">Copiar resumo</button>
+          <button id="exportCsvBtn" class="ghost-button" type="button">Exportar CSV</button>
+        </div>
       </div>
 
       <div class="table-wrap">
@@ -236,7 +242,7 @@
       <summary>Como chegamos a esta estimativa?</summary>
       <div>
         <p>Multiplicamos seus tokens de entrada e saída pelos preços públicos de cada provedor. A comparação mantém o mesmo volume em todos os modelos; tokenizadores diferentes podem alterar o consumo real.</p>
-        <p>O modo Batch aplica o desconto oficial (~50%) só nos modelos cuja Batch API é documentada publicamente pelo provedor (OpenAI, Anthropic e Google); os demais mantêm o preço padrão nesse modo. Ainda não incluímos desconto de cache, de volume, nem tarifas especiais para contexto longo.</p>
+        <p>O modo Batch aplica o desconto oficial (~50%) só nos modelos cuja Batch API é documentada publicamente pelo provedor (OpenAI, Anthropic, Google e Qwen); os demais mantêm o preço padrão nesse modo. Esta comparação geral ainda não inclui cache, volume nem faixas de contexto longo; use a aba “Contexto &amp; Custo” para simular cache e contexto.</p>
       </div>
     </details>
     </div>
@@ -309,6 +315,11 @@
               <input id="contextCachePercent" type="range" min="0" max="100" step="5" value="40" />
               <small>Percentual do input que você espera já estar disponível no cache do provedor.</small>
             </div>
+            <div class="context-range-field">
+              <div><label for="contextCacheWritePercent">Input novo gravado no cache</label><strong id="contextCacheWriteValue">0%</strong></div>
+              <input id="contextCacheWritePercent" type="range" min="0" max="100" step="5" value="0" />
+              <small>Percentual da parte ainda não cacheada que será gravada. Só se aplica quando o provedor cobra essa operação separadamente.</small>
+            </div>
             <div class="field-block">
               <label for="contextFutureTurns">Turnos futuros para comparar</label>
               <input id="contextFutureTurns" type="number" min="1" max="100" step="1" value="10" />
@@ -378,7 +389,7 @@
       <section class="context-comparison results-section" aria-labelledby="contextComparisonTitle">
         <div class="results-heading">
           <div><span class="step-kicker">OpenAI · Anthropic · Google</span><h2 id="contextComparisonTitle">Compare contexto e cache</h2><p>Mesmo texto estimado e mesmo cenário provável em todos os modelos.</p></div>
-          <span id="contextPricingDate" class="result-count">Preços: 28/08/2026</span>
+          <span id="contextPricingDate" class="result-count">Preços: 13/09/2026</span>
         </div>
         <div class="table-wrap context-table-wrap">
           <table>
@@ -397,8 +408,8 @@
         <summary>Como esta estimativa funciona e o que ela não inclui?</summary>
         <div>
           <p><strong>Estimativa:</strong> o texto é contado localmente por uma heurística calibrada por provedor. A contagem oficial pode divergir porque OpenAI, Anthropic e Google usam tokenizadores e overheads próprios. Nenhum texto digitado aqui é enviado para APIs externas.</p>
-          <p><strong>Cache:</strong> a simulação trata a parcela informada como leitura de cache e o restante como input novo. Quando o provedor publica uma tarifa de gravação separada, ela é aplicada ao prefixo novo; armazenamento por hora não entra no total.</p>
-          <p><strong>Consumo confirmado:</strong> futuramente poderá ser importado do objeto <code>usage</code> das APIs, incluindo <code>input_tokens</code>, <code>cached_tokens</code>, <code>cache_write_tokens</code>, <code>output_tokens</code> e <code>reasoning_tokens</code>. Hoje todos os números desta aba são pré-chamada.</p>
+          <p><strong>Cache:</strong> a simulação separa leitura de cache, gravação de cache e input novo. A gravação só usa a tarifa própria quando o provedor a publica; armazenamento por hora não entra no total.</p>
+          <p><strong>Consumo confirmado:</strong> você pode colar o objeto <code>usage</code> retornado por OpenAI, Anthropic ou Google para comparar a estimativa com os tokens e o custo real da chamada. A importação e o cálculo acontecem somente neste navegador.</p>
         </div>
       </details>
     </section>
@@ -409,18 +420,19 @@
         <p>Uma estimativa clara para escolher melhor.</p>
       </div>
       <p class="source-list">
-        Tabela revisada em <span id="pricingDate">26/08/2026</span> · <span id="sourceLinks"></span>
+        Tabela revisada em <span id="pricingDate">13/09/2026</span> · <span id="sourceLinks"></span>
+        <small><a href="privacy.html">Privacidade</a> · <a href="terms.html">Termos de uso</a> · <a href="https://github.com/Gor0d/economIA" target="_blank" rel="noopener noreferrer">Código-fonte</a></small>
         <small>As marcas e logos pertencem aos respectivos proprietários e são usadas apenas para identificação.</small>
       </p>
     </footer>
   </main>
 
-  <script src="js/pricing-status.js"></script>
-  <script src="js/pricing.js?v=20260830-structure1"></script>
-  <script src="js/calculator.js?v=20260830-structure1"></script>
-  <script src="js/app.js?v=20260830-structure1"></script>
-  <script src="js/context-models.js?v=20260830-structure1"></script>
-  <script src="js/context-calculator.js?v=20260830-structure1"></script>
-  <script src="js/context-app.js?v=20260830-structure1"></script>
+  <script src="js/pricing-status.js?v=20260913-review1"></script>
+  <script src="js/pricing.js?v=20260913-review1"></script>
+  <script src="js/calculator.js?v=20260913-review1"></script>
+  <script src="js/app.js?v=20260913-review1"></script>
+  <script src="js/context-models.js?v=20260913-review1"></script>
+  <script src="js/context-calculator.js?v=20260913-review1"></script>
+  <script src="js/context-app.js?v=20260913-review1"></script>
 </body>
 </html>

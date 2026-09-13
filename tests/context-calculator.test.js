@@ -35,15 +35,19 @@ test("calcula leitura e gravação de cache separadamente", () => {
     inputTokens: 1_000_000,
     outputTokens: 100_000,
     cachePercent: 50,
+    cacheWritePercent: 40,
   });
 
   assert.equal(result.cachedTokens, 500_000);
-  assert.equal(result.cacheWriteTokens, 500_000);
+  assert.equal(result.cacheWriteTokens, 200_000);
+  assert.equal(result.freshTokens, 300_000);
   assert.equal(result.costWithoutCache, 2);
   assert.equal(result.cacheReadCost, 0.1);
-  assert.equal(result.uncachedCost, 1.25);
+  assert.equal(result.cacheWriteCost, 0.5);
+  assert.equal(result.freshCost, 0.6);
+  assert.equal(result.uncachedCost, 1.1);
   assert.equal(result.outputCost, 1);
-  assert.equal(result.totalWithCache, 2.35);
+  assert.equal(result.totalWithCache, 2.2);
 });
 
 test("aplica a faixa de contexto longo à requisição inteira", () => {
@@ -58,7 +62,7 @@ test("aplica a faixa de contexto longo à requisição inteira", () => {
   assert.equal(result.rates.input, 8);
   assert.equal(result.rates.cacheWrite, 10);
   assert.equal(result.rates.output, 30);
-  assert.equal(result.totalWithCache, 3.3);
+  assert.ok(Math.abs(result.totalWithCache - 2.7) < 1e-9);
 });
 
 test("projeta o reenvio e crescimento do histórico a cada turno", () => {

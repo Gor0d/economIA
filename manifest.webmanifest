@@ -1,0 +1,13 @@
+{
+  "name": "EconomIA — Calculadora de custos de IA",
+  "short_name": "EconomIA",
+  "description": "Compare custos de tokens entre modelos e provedores de inteligência artificial.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07111f",
+  "theme_color": "#07111f",
+  "icons": [
+    { "src": "/assets/icons/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "/assets/icons/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

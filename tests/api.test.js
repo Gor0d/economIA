@@ -13,6 +13,16 @@ test("API ordena resultados por custo e calcula baseline", () => {
 test("API rejeita modelo e tokens inválidos", () => {
   assert.throws(() => comparePrices({ inputTokens: -1, outputTokens: 0 }), /inputTokens/);
   assert.throws(() => comparePrices({ inputTokens: 1, outputTokens: 1, baselineModelId: "inexistente" }), /não encontrado/);
+  assert.throws(() => comparePrices({ inputTokens: "1000", outputTokens: 1 }), /inputTokens/);
+  assert.throws(() => comparePrices({ inputTokens: 1, outputTokens: 1, batch: "true" }), /booleano/);
+  assert.throws(() => comparePrices({ inputTokens: 1, outputTokens: 1, surpresa: true }), /não reconhecidos/);
+});
+
+test("API filtra provedor e limita a resposta para clientes de IA", () => {
+  const result = comparePrices({ inputTokens: 1_000, outputTokens: 100, provider: "OpenAI", limit: 2 });
+  assert.equal(result.results.length, 2);
+  assert.ok(result.results.every((row) => row.provider === "OpenAI"));
+  assert.throws(() => comparePrices({ inputTokens: 1, outputTokens: 1, provider: "inexistente" }), /provider/);
 });
 
 test("catálogo pode ser filtrado por provedor", () => {

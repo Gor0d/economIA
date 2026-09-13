@@ -10,6 +10,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { reconcileSnapshot } from "./pricing-monitor-core.mjs";
 
 const require = createRequire(import.meta.url);
 const { PRICING_META } = require("../js/pricing.js");
@@ -19,6 +20,7 @@ const ROOT_DIR = path.resolve(__dirname, "..");
 const SNAPSHOT_PATH = path.join(__dirname, "pricing-snapshots.json");
 const RESULT_PATH = path.join(__dirname, "pricing-drift-result.json");
 const STATUS_PATH = path.join(ROOT_DIR, "js", "pricing-status.js");
+const acceptChanges = process.argv.includes("--accept");
 
 function loadSnapshots() {
   if (!existsSync(SNAPSHOT_PATH)) return {};
@@ -125,6 +127,8 @@ const results = await Promise.all(
 );
 
 const changed = [];
+const newlyDetected = [];
+const accepted = [];
 const unreachable = [];
 const noSignal = [];
 const inconclusive = [];
@@ -145,11 +149,20 @@ for (const result of results) {
     continue;
   }
 
-  const prevEntry = previous[result.provider];
-  if (prevEntry && prevEntry.hash !== result.hash) {
+  const reconciliation = reconcileSnapshot(previous[result.provider], result, {
+    accept: acceptChanges,
+    checkedAt: new Date().toISOString(),
+  });
+  if (reconciliation.changed) {
     changed.push({ provider: result.provider, url: result.url });
   }
-  next[result.provider] = { hash: result.hash, url: result.url, checkedAt: new Date().toISOString() };
+  if (reconciliation.newlyDetected) {
+    newlyDetected.push({ provider: result.provider, url: result.url });
+  }
+  if (reconciliation.accepted) {
+    accepted.push({ provider: result.provider, url: result.url });
+  }
+  next[result.provider] = reconciliation.entry;
 }
 
 writeFileSync(SNAPSHOT_PATH, `${JSON.stringify(next, null, 2)}\n`);
@@ -162,7 +175,7 @@ const notMonitored = Object.keys(PRICING_META.sources)
   .filter((provider) => !(provider in next))
   .map((provider) => ({ provider, url: PRICING_META.sources[provider] }));
 
-const summary = { isFirstRun, changed, unreachable, noSignal, inconclusive, notMonitored };
+const summary = { isFirstRun, acceptChanges, changed, newlyDetected, accepted, unreachable, noSignal, inconclusive, notMonitored };
 writeFileSync(RESULT_PATH, JSON.stringify(summary, null, 2));
 
 const checkedAt = new Date().toISOString().slice(0, 10);
@@ -182,7 +195,7 @@ console.log(JSON.stringify(summary, null, 2));
 if (process.env.GITHUB_OUTPUT) {
   writeFileSync(
     process.env.GITHUB_OUTPUT,
-    `has_changes=${changed.length > 0 || unreachable.length > 0}\n`,
+    `has_changes=${changed.length > 0 || unreachable.length > 0}\nnew_changes=${newlyDetected.length > 0}\n`,
     { flag: "a" }
   );
 }

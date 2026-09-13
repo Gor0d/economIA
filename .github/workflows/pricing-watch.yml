@@ -40,7 +40,7 @@ jobs:
           fi
 
       - name: Abrir ou atualizar issue de revisao
-        if: steps.drift.outputs.has_changes == 'true' || steps.tests.outcome == 'failure'
+        if: always() && steps.drift.outcome == 'success'
         uses: actions/github-script@v7
         with:
           script: |
@@ -67,7 +67,7 @@ jobs:
               }
               lines.push('');
             }
-            lines.push('Isso não significa necessariamente que o preço mudou — só que a página oficial mudou ou ficou inacessível. Confira e atualize `js/pricing.js` manualmente se for o caso, depois rode `npm run check`.');
+            lines.push('Isso não significa necessariamente que o preço mudou — só que a página oficial mudou ou ficou inacessível. Confira e atualize `js/pricing.js` manualmente se for o caso. Depois rode `npm run check` e `npm run accept:drift`; sem a aceitação explícita, o alerta continuará pendente.');
             const body = lines.join('\n');
 
             const label = 'pricing-watch';
@@ -78,19 +78,35 @@ jobs:
               labels: label,
             });
 
-            if (openIssues.length > 0) {
+            const needsReview = drift.changed.length > 0 || drift.unreachable.length > 0 || testsFailed;
+
+            if (!needsReview && openIssues.length > 0) {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: openIssues[0].number,
-                body,
+                body: '✅ O monitor voltou ao estado normal. A revisão foi aceita e os testes estão passando; encerrando o alerta automaticamente.',
               });
-            } else {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: openIssues[0].number,
+                state: 'closed',
+                state_reason: 'completed',
+              });
+            } else if (needsReview && openIssues.length === 0) {
               await github.rest.issues.create({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 title: 'Revisar js/pricing.js — possível mudança de preço detectada',
                 body,
                 labels: [label],
+              });
+            } else if (needsReview && (drift.newlyDetected.length > 0 || testsFailed)) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: openIssues[0].number,
+                body,
               });
             }

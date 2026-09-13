@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://economia-calculadora.vercel.app/sitemap.xml

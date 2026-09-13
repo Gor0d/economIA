@@ -24,10 +24,14 @@ const els = {
   results: document.getElementById("results"),
   resultCount: document.getElementById("resultCount"),
   noResults: document.getElementById("noResults"),
+  copyComparisonBtn: document.getElementById("copyComparisonBtn"),
+  exportCsvBtn: document.getElementById("exportCsvBtn"),
   usedSummary: document.getElementById("usedSummary"),
   emptyState: document.getElementById("emptyState"),
   pricingDate: document.getElementById("pricingDate"),
   pricingDateTop: document.getElementById("pricingDateTop"),
+  pricingStatus: document.getElementById("pricingStatus"),
+  pricingStatusLabel: document.getElementById("pricingStatusLabel"),
   modelCountBadge: document.getElementById("modelCountBadge"),
   providerCountBadge: document.getElementById("providerCountBadge"),
   otherProvidersCount: document.getElementById("otherProvidersCount"),
@@ -57,6 +61,7 @@ const EXCHANGE_RATE_URL = "https://api.frankfurter.dev/v2/rate/USD/BRL";
 
 let usageMode = "detailed";
 let pricingMode = "standard";
+let lastComparison = null;
 
 const PROVIDER_LOGOS = {
   OpenAI: "assets/logos/openai.svg",
@@ -479,6 +484,7 @@ function render() {
 
   renderSummary({ usedModel, usedCost, rows, inputTokens, outputTokens, currency, toDisplay });
   renderRows(rows, { usedModel, usedCost, currency, toDisplay, batch });
+  lastComparison = { usedModel, usedCost, rows, inputTokens, outputTokens, currency, toDisplay, batch };
 
   if (batch && !hasBatchDiscount(usedModel)) {
     els.summaryFootnoteText.textContent = `${usedModel.name} não publica desconto de Batch API. O custo acima usa o preço padrão. O modo Batch só reduz o preço dos modelos com essa opção documentada.`;
@@ -539,6 +545,51 @@ function showPricingDate() {
       : PRICING_META.updatedAt;
   els.pricingDate.textContent = reviewedDate;
   els.pricingDateTop.textContent = formatRateDate(monitoredAt);
+  const monitorStatus = typeof PRICING_STATUS !== "undefined" ? PRICING_STATUS.status : "partial";
+  if (els.pricingStatus) els.pricingStatus.dataset.status = monitorStatus;
+  if (els.pricingStatusLabel) {
+    els.pricingStatusLabel.textContent = monitorStatus === "attention"
+      ? "Revisão de preços pendente desde"
+      : monitorStatus === "partial"
+        ? "Monitor parcial em"
+        : "Monitor executado em";
+  }
+}
+
+async function copyComparison() {
+  if (!lastComparison || !navigator.clipboard) return;
+  const { usedModel, usedCost, rows, inputTokens, outputTokens, currency, toDisplay, batch } = lastComparison;
+  const top = rows.slice(0, 5).map((row, index) =>
+    `${index + 1}. ${row.model.provider} ${row.model.name}: ${formatMoney(toDisplay(row.cost), currency)}`
+  );
+  const text = [
+    `EconomIA — ${formatNumber(inputTokens)} tokens de entrada + ${formatNumber(outputTokens)} de saída`,
+    `Referência: ${usedModel.name} (${formatMoney(toDisplay(usedCost), currency)})${batch ? " · Batch quando disponível" : ""}`,
+    "",
+    ...top,
+    "",
+    "https://economia-calculadora.vercel.app/",
+  ].join("\n");
+  await navigator.clipboard.writeText(text);
+  els.copyComparisonBtn.textContent = "Resumo copiado";
+  setTimeout(() => { els.copyComparisonBtn.textContent = "Copiar resumo"; }, 1800);
+}
+
+function exportComparisonCsv() {
+  if (!lastComparison) return;
+  const { rows, inputTokens, outputTokens, currency, toDisplay, batch } = lastComparison;
+  const escapeCsv = (value) => `"${String(value).replace(/"/g, '""')}"`;
+  const lines = [
+    ["posição", "provedor", "modelo", "tokens_entrada", "tokens_saida", "moeda", "custo", "batch"],
+    ...rows.map((row) => [row.rank, row.model.provider, row.model.name, inputTokens, outputTokens, currency, toDisplay(row.cost), batch && hasBatchDiscount(row.model)]),
+  ];
+  const csv = `\uFEFF${lines.map((line) => line.map(escapeCsv).join(",")).join("\n")}`;
+  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "economia-comparacao.csv";
+  link.click();
+  URL.revokeObjectURL(url);
 }
 
 populateModelSelect();
@@ -579,6 +630,8 @@ els.themeToggle.addEventListener("click", () => {
   const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
   applyTheme(nextTheme);
 });
+if (els.copyComparisonBtn) els.copyComparisonBtn.addEventListener("click", () => copyComparison().catch(() => {}));
+if (els.exportCsvBtn) els.exportCsvBtn.addEventListener("click", exportComparisonCsv);
 
 for (const button of els.usageModeButtons) {
   button.addEventListener("click", () => setUsageMode(button.dataset.usageMode));

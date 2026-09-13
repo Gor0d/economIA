@@ -2,32 +2,50 @@
   "openapi": "3.1.0",
   "info": {
     "title": "EconomIA Price Comparison API",
-    "version": "1.0.0",
-    "description": "Compara custos de tokens entre modelos de IA com uma tabela versionada e auditável."
+    "version": "1.1.0",
+    "description": "Compara custos de tokens entre modelos de IA com uma tabela versionada, fontes oficiais e data de revisão. API pública, sem autenticação; há limitação de uso por instância."
   },
   "servers": [{ "url": "https://economia-calculadora.vercel.app" }],
+  "tags": [{ "name": "Pricing", "description": "Catálogo e comparação de preços" }],
   "paths": {
     "/api/models": {
       "get": {
         "operationId": "listModels",
         "summary": "Lista modelos e preços",
-        "parameters": [{ "name": "provider", "in": "query", "schema": { "type": "string" } }],
-        "responses": { "200": { "description": "Catálogo atual" } }
+        "tags": ["Pricing"],
+        "parameters": [{ "name": "provider", "in": "query", "description": "Nome do provedor, sem diferenciar maiúsculas e minúsculas", "schema": { "type": "string" }, "example": "OpenAI" }],
+        "responses": {
+          "200": { "description": "Catálogo atual", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ModelCatalog" } } } },
+          "429": { "$ref": "#/components/responses/RateLimited" }
+        }
       }
     },
     "/api/compare": {
       "post": {
         "operationId": "compareModelPrices",
         "summary": "Compara custos para um consumo de tokens",
+        "tags": ["Pricing"],
         "requestBody": {
           "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ComparisonInput" } } }
+          "content": { "application/json": {
+            "schema": { "$ref": "#/components/schemas/ComparisonInput" },
+            "example": { "inputTokens": 1000000, "outputTokens": 100000, "baselineModelId": "gpt-5", "provider": "OpenAI", "limit": 5 }
+          } }
         },
-        "responses": { "200": { "description": "Comparação ordenada pelo menor custo" }, "400": { "description": "Entrada inválida" } }
+        "responses": {
+          "200": { "description": "Comparação ordenada pelo menor custo", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ComparisonResponse" } } } },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "413": { "description": "Corpo da requisição muito grande", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+          "429": { "$ref": "#/components/responses/RateLimited" }
+        }
       }
     }
   },
   "components": {
+    "responses": {
+      "BadRequest": { "description": "Entrada inválida", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+      "RateLimited": { "description": "Limite temporário excedido", "headers": { "Retry-After": { "schema": { "type": "integer" } } }, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+    },
     "schemas": {
       "ComparisonInput": {
         "type": "object",
@@ -36,9 +54,54 @@
           "inputTokens": { "type": "number", "minimum": 0, "maximum": 1000000000000 },
           "outputTokens": { "type": "number", "minimum": 0, "maximum": 1000000000000 },
           "baselineModelId": { "type": "string" },
-          "batch": { "type": "boolean", "default": false }
+          "batch": { "type": "boolean", "default": false },
+          "provider": { "type": "string", "description": "Retorna somente modelos deste provedor" },
+          "limit": { "type": "integer", "minimum": 1, "maximum": 46, "description": "Limita resultados após ordenar por custo" }
         },
         "additionalProperties": false
+      },
+      "ComparisonResult": {
+        "type": "object",
+        "required": ["modelId", "provider", "model", "costUsd", "inputUsdPerMillion", "outputUsdPerMillion", "batchApplied"],
+        "properties": {
+          "modelId": { "type": "string" },
+          "provider": { "type": "string" },
+          "model": { "type": "string" },
+          "costUsd": { "type": "number" },
+          "inputUsdPerMillion": { "type": "number" },
+          "outputUsdPerMillion": { "type": "number" },
+          "batchApplied": { "type": "boolean" },
+          "differenceFromBaselineUsd": { "type": ["number", "null"] },
+          "savingsVsBaselinePercent": { "type": ["number", "null"] },
+          "note": { "type": ["string", "null"] }
+        }
+      },
+      "ComparisonResponse": {
+        "type": "object",
+        "required": ["input", "pricing", "cheapest", "results", "disclaimer"],
+        "properties": {
+          "input": { "type": "object" },
+          "pricing": { "type": "object" },
+          "cheapest": { "oneOf": [{ "$ref": "#/components/schemas/ComparisonResult" }, { "type": "null" }] },
+          "baseline": { "type": ["object", "null"] },
+          "results": { "type": "array", "items": { "$ref": "#/components/schemas/ComparisonResult" } },
+          "disclaimer": { "type": "string" }
+        }
+      },
+      "ModelCatalog": {
+        "type": "object",
+        "required": ["reviewedAt", "count", "models", "sources"],
+        "properties": {
+          "reviewedAt": { "type": "string", "format": "date" },
+          "count": { "type": "integer" },
+          "models": { "type": "array", "items": { "type": "object" } },
+          "sources": { "type": "object", "additionalProperties": { "type": "string", "format": "uri" } }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": ["error"],
+        "properties": { "error": { "type": "string" }, "details": { "type": "object" } }
       }
     }
   }
