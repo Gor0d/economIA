@@ -5,7 +5,65 @@ import * as z from "zod/v4";
 
 const require = createRequire(import.meta.url);
 const { comparePrices, listModels } = require("./_comparison.js");
+const { PRICING } = require("../js/pricing.js");
 const { guardRequest } = require("./_http.js");
+
+const nullableNumber = z.number().nullable();
+const priceResultSchema = z.object({
+  modelId: z.string(),
+  provider: z.string(),
+  model: z.string(),
+  costUsd: z.number(),
+  inputUsdPerMillion: z.number(),
+  outputUsdPerMillion: z.number(),
+  batchApplied: z.boolean(),
+  differenceFromBaselineUsd: nullableNumber,
+  savingsVsBaselinePercent: nullableNumber,
+  note: z.string().nullable(),
+});
+
+export const compareOutputSchema = z.object({
+  input: z.object({
+    inputTokens: z.number(),
+    outputTokens: z.number(),
+    batch: z.boolean(),
+    baselineModelId: z.string().nullable(),
+    provider: z.string().nullable(),
+    limit: z.number().int().nullable(),
+  }),
+  pricing: z.object({
+    currency: z.literal("USD"),
+    unit: z.literal("per 1M tokens"),
+    reviewedAt: z.string(),
+    sources: z.record(z.string(), z.string()),
+  }),
+  cheapest: priceResultSchema.nullable(),
+  baseline: z.object({
+    modelId: z.string(),
+    provider: z.string(),
+    model: z.string(),
+    costUsd: z.number(),
+  }).nullable(),
+  results: z.array(priceResultSchema),
+  disclaimer: z.string(),
+});
+
+const catalogModelSchema = z.object({
+  id: z.string(),
+  provider: z.string(),
+  name: z.string(),
+  input: z.number(),
+  output: z.number(),
+  batchDiscount: z.number().optional(),
+  note: z.string().optional(),
+});
+
+export const modelsOutputSchema = z.object({
+  reviewedAt: z.string(),
+  count: z.number().int().nonnegative(),
+  models: z.array(catalogModelSchema),
+  sources: z.record(z.string(), z.string()),
+});
 
 function buildServer() {
   const server = new McpServer({ name: "economia-price-comparator", version: "1.0.0" });
@@ -18,8 +76,9 @@ function buildServer() {
       baselineModelId: z.string().optional().describe("ID opcional do modelo usado para calcular economia"),
       batch: z.boolean().optional().default(false).describe("Aplicar Batch API quando disponível"),
       provider: z.string().optional().describe("Filtrar por um provedor, como OpenAI ou Anthropic"),
-      limit: z.number().int().min(1).max(46).optional().describe("Limitar a quantidade de resultados para reduzir a resposta"),
+      limit: z.number().int().min(1).max(PRICING.length).optional().describe("Limitar a quantidade de resultados para reduzir a resposta"),
     }),
+    outputSchema: compareOutputSchema,
     annotations: { readOnlyHint: true, openWorldHint: false },
   }, async (args) => {
     try {
@@ -33,6 +92,7 @@ function buildServer() {
     title: "Listar modelos e preços",
     description: "Lista os modelos disponíveis, preços por milhão de tokens e data de revisão.",
     inputSchema: z.object({ provider: z.string().optional() }),
+    outputSchema: modelsOutputSchema,
     annotations: { readOnlyHint: true, openWorldHint: false },
   }, async ({ provider }) => {
     const result = listModels(provider);
