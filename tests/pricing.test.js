@@ -41,8 +41,10 @@ test("a revisão de preços não ultrapassou a validade configurada", () => {
 test("DeepSeek V4 usa a tabela oficial vigente", () => {
   const flash = PRICING.find((model) => model.id === "deepseek-v4-flash");
   const pro = PRICING.find((model) => model.id === "deepseek-v4-pro");
-  assert.deepEqual([flash.input, flash.output], [0.14, 0.28]);
-  assert.deepEqual([pro.input, pro.output], [0.435, 0.87]);
+  assert.equal(flash.name, "DeepSeek V4.1 Flash");
+  assert.deepEqual([flash.input, flash.output], [0.3, 1.2]);
+  assert.deepEqual([pro.input, pro.output], [1.32, 3.96]);
+  assert.match(flash.note, /fora do pico/i);
 });
 
 test("Gemini 3.6 Flash usa o preço promocional oficial vigente", () => {
@@ -56,4 +58,19 @@ test("Tencent Hy4 Preview usa os preços oficiais de lançamento", () => {
   assert.ok(model, "Tencent Hy4 Preview ausente");
   assert.deepEqual([model.input, model.output], [0.834, 2.501]);
   assert.match(model.note, /0,042/);
+});
+
+test("novos modelos incluídos usam os preços oficiais", () => {
+  const expected = new Map([
+    ["gpt-6-astra", [10, 50, 0.5]],
+    ["gemini-3.8-flash", [0.75, 3.75, 0.5]],
+    ["kimi-k2.7-code", [0.95, 4, undefined]],
+    ["kimi-k2.6", [0.95, 4, undefined]],
+  ]);
+
+  for (const [id, prices] of expected) {
+    const model = PRICING.find((item) => item.id === id);
+    assert.ok(model, `${id} ausente`);
+    assert.deepEqual([model.input, model.output, model.batchDiscount], prices, id);
+  }
 });

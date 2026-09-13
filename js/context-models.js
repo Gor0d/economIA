@@ -8,7 +8,7 @@
   root.ContextCatalog = api;
 })(typeof globalThis !== "undefined" ? globalThis : this, function createContextCatalog() {
   const CONTEXT_PRICING_META = Object.freeze({
-    updatedAt: "2026-08-28",
+    updatedAt: "2026-09-13",
     unit: "USD por 1 milhão de tokens",
     sources: Object.freeze({
       OpenAI: "https://developers.openai.com/api/docs/models/compare",
@@ -23,6 +23,19 @@
    * prefixo quando o provedor publica uma tarifa separada.
    */
   const CONTEXT_MODELS = [
+    {
+      id: "gpt-6-astra",
+      provider: "OpenAI",
+      name: "GPT-6 Astra",
+      contextWindow: 1_050_000,
+      maxOutput: 128_000,
+      input: 10,
+      cachedInput: 1,
+      cacheWrite: 12.5,
+      output: 50,
+      longContext: { threshold: 272_000, inputMultiplier: 2, outputMultiplier: 1.5 },
+      note: "Acima de 272k tokens, a requisição inteira muda de faixa.",
+    },
     {
       id: "gpt-5.6-sol",
       provider: "OpenAI",
@@ -61,6 +74,18 @@
       longContext: { threshold: 272_000, inputMultiplier: 2, outputMultiplier: 1.5 },
     },
     {
+      id: "claude-fable-5.1",
+      provider: "Anthropic",
+      name: "Claude Fable 5.1",
+      contextWindow: 1_000_000,
+      maxOutput: 128_000,
+      input: 10,
+      cachedInput: 0.25,
+      cacheWrite: 12.5,
+      output: 50,
+      note: "Cache read custa 2,5% do input; gravação considerada com TTL de 5 minutos.",
+    },
+    {
       id: "claude-sonnet-5",
       provider: "Anthropic",
       name: "Claude Sonnet 5",
@@ -95,6 +120,19 @@
       cacheWrite: 1.25,
       output: 5,
       note: "Gravação de cache considerada com TTL de 5 minutos.",
+    },
+    {
+      id: "gemini-3.8-flash",
+      provider: "Google",
+      name: "Gemini 3.8 Flash",
+      contextWindow: 1_048_576,
+      maxOutput: 65_536,
+      input: 0.75,
+      cachedInput: 0.075,
+      cacheWrite: null,
+      cacheStoragePerMillionHour: 0.5,
+      output: 3.75,
+      note: "Preço promocional até 31/12/2026; armazenamento de cache é cobrado à parte.",
     },
     {
       id: "gemini-3.7-flash",

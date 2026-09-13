@@ -34,8 +34,8 @@ test("rejeita entradas ambíguas ou inválidas", () => {
 });
 
 test("calcula o preset do DeepSeek com os preços oficiais atuais", () => {
-  const model = { input: 0.14, output: 0.28 };
-  assert.equal(calcCost(model, 267_400_000, 114_600_000), 69.524);
+  const model = { input: 0.3, output: 1.2 };
+  assert.ok(Math.abs(calcCost(model, 267_400_000, 114_600_000) - 217.74) < 1e-9);
 });
 
 test("aplica o desconto de Batch API só quando o modelo tem esse desconto", () => {

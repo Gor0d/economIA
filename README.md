@@ -8,7 +8,7 @@
 
 Site que responde uma pergunta simples: *"quanto eu gastei, e quanto teria gasto se
 tivesse usado outro modelo?"*. Você informa os tokens de entrada/saída e o modelo usado; a
-calculadora mostra o custo com todos os modelos cadastrados — hoje **42 modelos em 13
+calculadora mostra o custo com todos os modelos cadastrados — hoje **46 modelos em 13
 provedores** (Anthropic, OpenAI, Google, DeepSeek, xAI, Mistral, Moonshot AI, Z.ai,
 Qwen, MiniMax, Cohere, Perplexity e Tencent) —
 ordenados do mais barato ao mais caro, com a economia (ou o quanto custaria a mais) em
@@ -28,12 +28,13 @@ em grandes volumes.
 
 ## Como foi construído
 
-Decisão deliberada desde o início: **HTML/CSS/JS puro, sem build e sem backend**. Não existe
-API própria, não existe banco de dados, não existe servidor além de servir arquivos
-estáticos. Isso significa:
+Decisão deliberada desde o início: a interface é **HTML/CSS/JS puro, sem build**, e todo o
+cálculo do site acontece localmente. Não existe banco de dados. Funções serverless pequenas
+expõem o mesmo catálogo pela API pública e pelo MCP, sem participar do uso normal da interface.
+Isso significa:
 
 - Roda em qualquer host estático (Vercel, Netlify, GitHub Pages) sem configuração de build.
-- Não há chave de API, custo de servidor ou infraestrutura pra manter.
+- Não há chave de IA nem infraestrutura dedicada para manter.
 - A única chamada de rede feita pelo navegador do usuário é para a API pública e gratuita do
   [Frankfurter](https://frankfurter.dev/) (câmbio USD→BRL) — o resto é tudo cálculo local.
 - Sem framework: os arquivos `js/pricing-status.js` → `js/pricing.js` → `js/calculator.js` → `js/app.js` são carregados na
@@ -69,8 +70,8 @@ Duas camadas, as duas gratuitas:
    - Detalhe que exigiu ajuste: o HTML bruto dessas páginas muda a cada request (scripts de
      analytics, nonces, banners rotativos), então comparar a página inteira gerava alarme
      falso todo dia. A solução foi extrair só os valores em dólar do texto visível — e ainda
-     assim buscar cada página duas vezes com um intervalo curto, só confiando no resultado se
-     as duas baterem (algumas páginas servem uma variação diferente por requisição).
+     assim buscar cada página duas vezes com um intervalo curto. Quando divergem, uma terceira
+     leitura desempata; sem consenso, a checagem fica inconclusiva em vez de gerar alerta falso.
    - A página da **Moonshot AI (Kimi)** é um app Next.js: o preço não aparece como texto
      contíguo (`$3.00`) no HTML — vem serializado do React em pedaços separados
      (`` `$`,`3.00` ``) dentro de um `<script>`. O extrator reconhece também esse formato,
@@ -101,7 +102,7 @@ npm run check:drift     # compara com o retrato salvo e mostra o que mudou
 - **Dois modos de entrada**: tokens de entrada/saída separados, ou só o total com uma
   estimativa de divisão (com perfis prontos: chat, código, agentes).
 - **Modo de cobrança Padrão / Batch API (−50%)**: aplica o desconto oficial de Batch API nos
-  modelos que o publicam (Anthropic, OpenAI, Google); os demais mostram "sem Batch API" e
+  modelos que o publicam (Anthropic, OpenAI, Google e Qwen); os demais mostram "sem Batch API" e
   mantêm o preço padrão — nunca inventa desconto onde não é documentado.
 - **Câmbio USD→BRL automático**, com cache de 12h no navegador e opção de digitar um valor
   manual.
@@ -212,7 +213,7 @@ foi construído" acima). Cada modelo em `js/pricing.js` é um objeto:
 
 Depois de uma revisão manual (inclusive as disparadas pela Issue automática), atualize
 `PRICING_META.updatedAt` e rode `npm run check`. Fontes oficiais usadas na última
-atualização (30/08/2026):
+atualização (13/09/2026):
 
 - Anthropic (Claude): https://platform.claude.com/docs/en/about-claude/pricing
 - OpenAI: https://developers.openai.com/api/docs/models
@@ -220,7 +221,7 @@ atualização (30/08/2026):
 - DeepSeek: https://api-docs.deepseek.com/quick_start/pricing/
 - xAI Grok: https://docs.x.ai/developers/pricing
 - Mistral: https://mistral.ai/pricing/api/
-- Moonshot AI (Kimi): https://platform.kimi.ai/docs/pricing/chat-k3
+- Moonshot AI (Kimi): https://platform.kimi.ai/
 - Z.ai (GLM): https://docs.z.ai/guides/overview/pricing
 - Qwen: https://www.alibabacloud.com/help/en/model-studio/model-pricing
 - MiniMax: https://platform.minimax.io/docs/guides/pricing-paygo.md
@@ -230,6 +231,9 @@ atualização (30/08/2026):
 
 ## O que a calculadora **não** modela (por simplicidade)
 
+- **Horário de pico da DeepSeek**: a comparação usa a tarifa de pico, mais conservadora.
+  As tarifas fora de pico aparecem na observação dos modelos, mas a troca por horário não é
+  aplicada automaticamente.
 - **Cache de prompt na comparação geral**: a aba “Comparar consumo” continua usando preço
   cheio. A aba “Contexto & Custo” modela cache para OpenAI, Anthropic e Google como cenário
   pré-chamada; armazenamento por hora e descontos contratuais continuam fora do total.

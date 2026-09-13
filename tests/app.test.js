@@ -165,7 +165,7 @@ test("interface renderiza, atualiza câmbio e executa o preset", async () => {
   assert.equal(elements.modelUsed.value, "deepseek-v4-flash");
   assert.equal(elements.inputTokens.value, "267400000");
   assert.equal(elements.outputTokens.value, "114600000");
-  assert.match(elements.usedSummary.innerHTML, /\$69\.52/);
+  assert.match(elements.usedSummary.innerHTML, /\$217\.74/);
 
   usageModeButtons[1].listeners.click();
   assert.equal(elements.totalFields.hidden, false);

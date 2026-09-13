@@ -1,7 +1,7 @@
 /*
  * Tabela de preços das principais APIs de IA (US$ por 1 milhão de tokens).
  * Fonte: páginas oficiais de pricing de cada provedor (ver README.md para os links).
- * Atualizado em: 2026-08-30
+ * Atualizado em: 2026-09-13
  *
  * Para atualizar um preço: edite os campos `input` e `output` do modelo.
  * Para adicionar um modelo novo: copie um objeto existente e ajuste os campos.
@@ -15,7 +15,7 @@
  */
 
 const PRICING_META = {
-  updatedAt: "2026-08-30",
+  updatedAt: "2026-09-13",
   maxAgeDays: 45,
   sources: {
     Anthropic: "https://platform.claude.com/docs/en/about-claude/pricing",
@@ -24,7 +24,7 @@ const PRICING_META = {
     DeepSeek: "https://api-docs.deepseek.com/quick_start/pricing/",
     xAI: "https://docs.x.ai/developers/pricing",
     Mistral: "https://mistral.ai/pricing/api/",
-    "Moonshot AI": "https://platform.kimi.ai/docs/pricing/chat-k3",
+    "Moonshot AI": "https://platform.kimi.ai/",
     "Z.ai": "https://docs.z.ai/guides/overview/pricing",
     Qwen: "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
     MiniMax: "https://platform.minimax.io/docs/guides/pricing-paygo.md",
@@ -46,6 +46,7 @@ const PRICING = [
 
   // ---- OpenAI ----
   // batchDiscount: Batch API, 50% off (documentado pela OpenAI)
+  { id: "gpt-6-astra", provider: "OpenAI", name: "GPT-6 Astra", input: 10.00, output: 50.00, batchDiscount: 0.5, note: "Cache hit: US$ 1,00; cache write: US$ 12,50 por 1M. Acima de 272k tokens, input/cache 2x e output 1,5x" },
   { id: "gpt-5.6-sol", provider: "OpenAI", name: "GPT-5.6 Sol", input: 4.00, output: 20.00, batchDiscount: 0.5, note: "Preço promocional (até nov/2026)" },
   { id: "gpt-5.6-terra", provider: "OpenAI", name: "GPT-5.6 Terra", input: 2.00, output: 12.00, batchDiscount: 0.5 },
   { id: "gpt-5.6-luna", provider: "OpenAI", name: "GPT-5.6 Luna", input: 0.20, output: 1.20, batchDiscount: 0.5 },
@@ -56,6 +57,7 @@ const PRICING = [
 
   // ---- Google (Gemini) ----
   // batchDiscount: Batch Mode, 50% off (documentado pelo Google)
+  { id: "gemini-3.8-flash", provider: "Google", name: "Gemini 3.8 Flash", input: 0.75, output: 3.75, batchDiscount: 0.5, note: "Preço promocional até 31/12/2026; depois sobe para US$ 1,50 / US$ 7,50" },
   { id: "gemini-3.7-flash", provider: "Google", name: "Gemini 3.7 Flash", input: 0.75, output: 3.75, batchDiscount: 0.5, note: "Preço sobe em jan/2027" },
   { id: "gemini-3.6-flash", provider: "Google", name: "Gemini 3.6 Flash", input: 0.75, output: 3.75, batchDiscount: 0.5, note: "Preço sobe em jan/2027" },
   { id: "gemini-3.5-flash", provider: "Google", name: "Gemini 3.5 Flash", input: 1.50, output: 9.00, batchDiscount: 0.5 },
@@ -67,8 +69,8 @@ const PRICING = [
   { id: "gemini-2.5-flash-lite", provider: "Google", name: "Gemini 2.5 Flash-Lite", input: 0.10, output: 0.40, batchDiscount: 0.5, note: "Aposentado em 16/10/2026" },
 
   // ---- DeepSeek ----
-  { id: "deepseek-v4-flash", provider: "DeepSeek", name: "DeepSeek V4-Flash", input: 0.14, output: 0.28, note: "Cache hit: US$ 0,0028 por 1M tokens de input" },
-  { id: "deepseek-v4-pro", provider: "DeepSeek", name: "DeepSeek V4-Pro", input: 0.435, output: 0.87, note: "Cache hit: US$ 0,003625 por 1M tokens de input" },
+  { id: "deepseek-v4-flash", provider: "DeepSeek", name: "DeepSeek V4.1 Flash", input: 0.30, output: 1.20, note: "Tarifa de pico; fora do pico: US$ 0,15 input / US$ 0,60 output / US$ 0,003 cache hit por 1M" },
+  { id: "deepseek-v4-pro", provider: "DeepSeek", name: "DeepSeek V4 Pro", input: 1.32, output: 3.96, note: "Tarifa de pico; fora do pico: US$ 0,66 input / US$ 1,98 output / US$ 0,022 cache hit por 1M" },
 
   // ---- xAI (Grok) ----
   { id: "grok-4.6", provider: "xAI", name: "Grok 4.6", input: 2.00, output: 6.00, note: "Prompts <200k tokens; acima disso dobra" },
@@ -83,6 +85,8 @@ const PRICING = [
 
   // ---- Moonshot AI (Kimi) ----
   { id: "kimi-k3", provider: "Moonshot AI", name: "Kimi K3", input: 3.00, output: 15.00, note: "Cache hit: US$ 0,30 por 1M tokens de input" },
+  { id: "kimi-k2.7-code", provider: "Moonshot AI", name: "Kimi K2.7 Code", input: 0.95, output: 4.00, note: "Modelo de código, contexto de 256k; cache hit: US$ 0,19 por 1M tokens de input" },
+  { id: "kimi-k2.6", provider: "Moonshot AI", name: "Kimi K2.6", input: 0.95, output: 4.00, note: "Multimodal, contexto de 256k; cache hit: US$ 0,16 por 1M tokens de input" },
 
   // ---- Z.ai (Zhipu / GLM) ----
   { id: "glm-5.2", provider: "Z.ai", name: "GLM-5.2", input: 1.40, output: 4.40, note: "Cache hit: US$ 0,26 por 1M tokens de input" },
