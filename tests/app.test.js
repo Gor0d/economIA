@@ -165,7 +165,7 @@ test("interface renderiza, atualiza câmbio e executa o preset", async () => {
   assert.equal(elements.modelUsed.value, "deepseek-v4-flash");
   assert.equal(elements.inputTokens.value, "267400000");
   assert.equal(elements.outputTokens.value, "114600000");
-  assert.match(elements.usedSummary.innerHTML, /\$217\.74/);
+  assert.match(elements.usedSummary.innerHTML, /\$108\.87/);
 
   usageModeButtons[1].listeners.click();
   assert.equal(elements.totalFields.hidden, false);
@@ -240,7 +240,8 @@ test("busca reduz o ranking sem alterar o cálculo principal", async () => {
 
   elements.modelSearch.value = "deepseek";
   elements.modelSearch.listeners.input();
-  assert.equal((elements.results.innerHTML.match(/<tr/g) || []).length, 2);
-  assert.equal(elements.resultCount.textContent, "2 modelos");
+  const deepSeekCount = PRICING.filter((model) => model.provider === "DeepSeek").length;
+  assert.equal((elements.results.innerHTML.match(/<tr/g) || []).length, deepSeekCount);
+  assert.equal(elements.resultCount.textContent, `${deepSeekCount} modelos`);
   assert.match(elements.usedSummary.innerHTML, /\$20\.00/);
 });

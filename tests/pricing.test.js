@@ -38,13 +38,17 @@ test("a revisão de preços não ultrapassou a validade configurada", () => {
   assert.ok(ageDays <= PRICING_META.maxAgeDays, `Tabela sem revisão há ${Math.floor(ageDays)} dias`);
 });
 
-test("DeepSeek V4 usa a tabela oficial vigente", () => {
+test("DeepSeek usa a tabela oficial vigente por faixa de horário", () => {
   const flash = PRICING.find((model) => model.id === "deepseek-v4-flash");
+  const flashPeak = PRICING.find((model) => model.id === "deepseek-v4-1-flash-peak");
   const pro = PRICING.find((model) => model.id === "deepseek-v4-pro");
-  assert.equal(flash.name, "DeepSeek V4.1 Flash");
-  assert.deepEqual([flash.input, flash.output], [0.3, 1.2]);
-  assert.deepEqual([pro.input, pro.output], [1.32, 3.96]);
-  assert.match(flash.note, /fora do pico/i);
+  const proPeak = PRICING.find((model) => model.id === "deepseek-v4-pro-peak");
+  assert.deepEqual([flash.input, flash.output], [0.15, 0.60]);
+  assert.deepEqual([flashPeak.input, flashPeak.output], [0.30, 1.20]);
+  assert.deepEqual([pro.input, pro.output], [0.66, 1.98]);
+  assert.deepEqual([proPeak.input, proPeak.output], [1.32, 3.96]);
+  assert.match(flash.note, /0,003/);
+  assert.match(flashPeak.note, /0,006/);
 });
 
 test("Gemini 3.6 Flash usa o preço promocional oficial vigente", () => {
@@ -63,9 +67,19 @@ test("Tencent Hy4 Preview usa os preços oficiais de lançamento", () => {
 test("novos modelos incluídos usam os preços oficiais", () => {
   const expected = new Map([
     ["gpt-6-astra", [10, 50, 0.5]],
+    ["gpt-6-sol", [2, 10, 0.5]],
+    ["gpt-6-luna", [0.1, 0.5, 0.5]],
+    ["claude-opus-5-5", [4, 20, 0.5]],
     ["gemini-3.8-flash", [0.75, 3.75, 0.5]],
+    ["grok-4.7", [2, 6, undefined]],
     ["kimi-k2.7-code", [0.95, 4, undefined]],
+    ["kimi-k2.7-code-highspeed", [1.9, 8, undefined]],
     ["kimi-k2.6", [0.95, 4, undefined]],
+    ["glm-5.3", [1.4, 4.4, undefined]],
+    ["glm-5.3-flash", [0.15, 0.5, undefined]],
+    ["glm-5.3-flashx", [0.37, 1.25, undefined]],
+    ["minimax-m3-priority", [0.45, 1.8, undefined]],
+    ["jev", [0.042, 0, undefined]],
   ]);
 
   for (const [id, prices] of expected) {

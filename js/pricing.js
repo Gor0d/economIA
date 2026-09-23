@@ -1,7 +1,7 @@
 /*
  * Tabela de preços das principais APIs de IA (US$ por 1 milhão de tokens).
  * Fonte: páginas oficiais de pricing de cada provedor (ver README.md para os links).
- * Atualizado em: 2026-09-13
+ * Atualizado em: 2026-09-23
  *
  * Para atualizar um preço: edite os campos `input` e `output` do modelo.
  * Para adicionar um modelo novo: copie um objeto existente e ajuste os campos.
@@ -15,22 +15,23 @@
  */
 
 const PRICING_META = {
-  updatedAt: "2026-09-13",
+  updatedAt: "2026-09-23",
   maxAgeDays: 45,
   sources: {
     Anthropic: "https://platform.claude.com/docs/en/about-claude/pricing",
-    OpenAI: "https://developers.openai.com/api/docs/models",
+    OpenAI: "https://developers.openai.com/api/docs/pricing",
     Google: "https://ai.google.dev/gemini-api/docs/pricing",
     DeepSeek: "https://api-docs.deepseek.com/quick_start/pricing/",
     xAI: "https://docs.x.ai/developers/pricing",
     Mistral: "https://mistral.ai/pricing/api/",
-    "Moonshot AI": "https://platform.kimi.ai/",
+    "Moonshot AI": "https://platform.kimi.ai/docs/pricing/chat",
     "Z.ai": "https://docs.z.ai/guides/overview/pricing",
     Qwen: "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
     MiniMax: "https://platform.minimax.io/docs/guides/pricing-paygo.md",
     Cohere: "https://cohere.com/pricing",
     Perplexity: "https://docs.perplexity.ai/getting-started/pricing",
     Tencent: "https://www.tencent.com/tencent-releases-and-open-sources-tencent-hy4-preview/",
+    "TypeSafe AI": "https://typesafe.ai/blog/introducing-system-one-models-and-jev",
   },
 };
 
@@ -38,6 +39,7 @@ const PRICING = [
   // ---- Anthropic (Claude) ----
   // batchDiscount: Message Batches API, 50% off (documentado pela Anthropic)
   { id: "claude-fable-5.1", provider: "Anthropic", name: "Claude Fable 5.1", input: 10.00, output: 50.00, batchDiscount: 0.5, note: "Cache hit: US$ 0,25 por 1M (era US$ 1,00 na Fable 5)" },
+  { id: "claude-opus-5-5", provider: "Anthropic", name: "Claude Opus 5.5", input: 4.00, output: 20.00, batchDiscount: 0.5, note: "Cache hit: US$ 0,20 por 1M tokens de input" },
   { id: "claude-opus-5", provider: "Anthropic", name: "Claude Opus 5", input: 5.00, output: 25.00, batchDiscount: 0.5 },
   { id: "claude-sonnet-5", provider: "Anthropic", name: "Claude Sonnet 5", input: 2.00, output: 10.00, batchDiscount: 0.5 },
   { id: "claude-haiku-4-5", provider: "Anthropic", name: "Claude Haiku 4.5", input: 1.00, output: 5.00, batchDiscount: 0.5 },
@@ -46,7 +48,9 @@ const PRICING = [
 
   // ---- OpenAI ----
   // batchDiscount: Batch API, 50% off (documentado pela OpenAI)
-  { id: "gpt-6-astra", provider: "OpenAI", name: "GPT-6 Astra", input: 10.00, output: 50.00, batchDiscount: 0.5, note: "Cache hit: US$ 1,00; cache write: US$ 12,50 por 1M. Acima de 272k tokens, input/cache 2x e output 1,5x" },
+  { id: "gpt-6-astra", provider: "OpenAI", name: "GPT-6 Astra", input: 10.00, output: 50.00, batchDiscount: 0.5, note: "Cache hit: US$ 1,00; cache write: US$ 12,50 por 1M. Acima de 272k tokens, input/cache 2× e output 1,5×" },
+  { id: "gpt-6-sol", provider: "OpenAI", name: "GPT-6 Sol", input: 2.00, output: 10.00, batchDiscount: 0.5, note: "Cache hit: US$ 0,20; prompts >272k: input/cache 2× e output 1,5×" },
+  { id: "gpt-6-luna", provider: "OpenAI", name: "GPT-6 Luna", input: 0.10, output: 0.50, batchDiscount: 0.5, note: "Cache hit: US$ 0,01; prompts >272k: input/cache 2× e output 1,5×" },
   { id: "gpt-5.6-sol", provider: "OpenAI", name: "GPT-5.6 Sol", input: 4.00, output: 20.00, batchDiscount: 0.5, note: "Preço promocional (até nov/2026)" },
   { id: "gpt-5.6-terra", provider: "OpenAI", name: "GPT-5.6 Terra", input: 2.00, output: 12.00, batchDiscount: 0.5 },
   { id: "gpt-5.6-luna", provider: "OpenAI", name: "GPT-5.6 Luna", input: 0.20, output: 1.20, batchDiscount: 0.5 },
@@ -69,10 +73,13 @@ const PRICING = [
   { id: "gemini-2.5-flash-lite", provider: "Google", name: "Gemini 2.5 Flash-Lite", input: 0.10, output: 0.40, batchDiscount: 0.5, note: "Aposentado em 16/10/2026" },
 
   // ---- DeepSeek ----
-  { id: "deepseek-v4-flash", provider: "DeepSeek", name: "DeepSeek V4.1 Flash", input: 0.30, output: 1.20, note: "Tarifa de pico; fora do pico: US$ 0,15 input / US$ 0,60 output / US$ 0,003 cache hit por 1M" },
-  { id: "deepseek-v4-pro", provider: "DeepSeek", name: "DeepSeek V4 Pro", input: 1.32, output: 3.96, note: "Tarifa de pico; fora do pico: US$ 0,66 input / US$ 1,98 output / US$ 0,022 cache hit por 1M" },
+  { id: "deepseek-v4-flash", provider: "DeepSeek", name: "DeepSeek V4.1 Flash · fora do pico", input: 0.15, output: 0.60, note: "Cache hit: US$ 0,003 por 1M. Fora do pico: demais horários e fins de semana (UTC)" },
+  { id: "deepseek-v4-1-flash-peak", provider: "DeepSeek", name: "DeepSeek V4.1 Flash · pico", input: 0.30, output: 1.20, note: "Cache hit: US$ 0,006 por 1M. Pico: 01:00–04:00 e 06:00–10:00 UTC, segunda a sexta" },
+  { id: "deepseek-v4-pro", provider: "DeepSeek", name: "DeepSeek V4 Pro · fora do pico", input: 0.66, output: 1.98, note: "Cache hit: US$ 0,022 por 1M. Fora do pico: demais horários, feriados chineses e fins de semana (UTC)" },
+  { id: "deepseek-v4-pro-peak", provider: "DeepSeek", name: "DeepSeek V4 Pro · pico", input: 1.32, output: 3.96, note: "Cache hit: US$ 0,044 por 1M. Pico: 01:00–04:00 e 06:00–10:00 UTC, segunda a sexta" },
 
   // ---- xAI (Grok) ----
+  { id: "grok-4.7", provider: "xAI", name: "Grok 4.7", input: 2.00, output: 6.00, note: "Prompts <200k tokens; acima disso dobra" },
   { id: "grok-4.6", provider: "xAI", name: "Grok 4.6", input: 2.00, output: 6.00, note: "Prompts <200k tokens; acima disso dobra" },
   { id: "grok-4.5", provider: "xAI", name: "Grok 4.5", input: 2.00, output: 6.00, note: "Prompts <200k tokens; acima disso dobra" },
   { id: "grok-4.3", provider: "xAI", name: "Grok 4.3", input: 1.25, output: 2.50 },
@@ -86,9 +93,13 @@ const PRICING = [
   // ---- Moonshot AI (Kimi) ----
   { id: "kimi-k3", provider: "Moonshot AI", name: "Kimi K3", input: 3.00, output: 15.00, note: "Cache hit: US$ 0,30 por 1M tokens de input" },
   { id: "kimi-k2.7-code", provider: "Moonshot AI", name: "Kimi K2.7 Code", input: 0.95, output: 4.00, note: "Modelo de código, contexto de 256k; cache hit: US$ 0,19 por 1M tokens de input" },
+  { id: "kimi-k2.7-code-highspeed", provider: "Moonshot AI", name: "Kimi K2.7 Code · High-speed", input: 1.90, output: 8.00, note: "Versão de alta velocidade, contexto de 256k; cache hit: US$ 0,38 por 1M tokens de input" },
   { id: "kimi-k2.6", provider: "Moonshot AI", name: "Kimi K2.6", input: 0.95, output: 4.00, note: "Multimodal, contexto de 256k; cache hit: US$ 0,16 por 1M tokens de input" },
 
   // ---- Z.ai (Zhipu / GLM) ----
+  { id: "glm-5.3", provider: "Z.ai", name: "GLM-5.3", input: 1.40, output: 4.40, note: "Cache hit: US$ 0,26 por 1M tokens de input" },
+  { id: "glm-5.3-flash", provider: "Z.ai", name: "GLM-5.3 Flash", input: 0.15, output: 0.50, note: "Cache hit: US$ 0,03 por 1M tokens de input" },
+  { id: "glm-5.3-flashx", provider: "Z.ai", name: "GLM-5.3 FlashX", input: 0.37, output: 1.25, note: "Cache hit: US$ 0,075 por 1M tokens de input" },
   { id: "glm-5.2", provider: "Z.ai", name: "GLM-5.2", input: 1.40, output: 4.40, note: "Cache hit: US$ 0,26 por 1M tokens de input" },
   { id: "glm-4.6", provider: "Z.ai", name: "GLM-4.6", input: 0.60, output: 2.20, note: "Cache hit: US$ 0,11 por 1M tokens de input" },
 
@@ -98,7 +109,8 @@ const PRICING = [
   { id: "qwen3.8-flash", provider: "Qwen", name: "Qwen3.8 Flash", input: 0.15, output: 0.47, batchDiscount: 0.5, note: "Cache hit: US$ 0,015 por 1M tokens de input" },
 
   // ---- MiniMax ----
-  { id: "minimax-m3", provider: "MiniMax", name: "MiniMax M3", input: 0.30, output: 1.20, note: "Prompts ≤512k tokens; acima disso dobra. Cache hit: US$ 0,06 por 1M tokens de input" },
+  { id: "minimax-m3", provider: "MiniMax", name: "MiniMax M3 · Standard", input: 0.30, output: 1.20, note: "Desconto permanente de 50%. Prompts >512k: input/output/cache dobram. Cache hit: US$ 0,06" },
+  { id: "minimax-m3-priority", provider: "MiniMax", name: "MiniMax M3 · Priority", input: 0.45, output: 1.80, note: "Prioridade de admissão (service_tier=priority). Prompts >512k: input/output/cache dobram. Cache hit: US$ 0,09" },
 
   // ---- Cohere ----
   { id: "cohere-command-r-plus", provider: "Cohere", name: "Command R+", input: 2.50, output: 10.00 },
@@ -110,6 +122,9 @@ const PRICING = [
 
   // ---- Tencent Hy (antiga Hunyuan) ----
   { id: "tencent-hy4-preview", provider: "Tencent", name: "Tencent Hy4 Preview", input: 0.834, output: 2.501, note: "Cache hit: US$ 0,042 por 1M tokens; preview open-source, contexto acima de 1M" },
+
+  // ---- TypeSafe AI (Jev) ----
+  { id: "jev", provider: "TypeSafe AI", name: "Jev", input: 0.042, output: 0, note: "Modelo de decisão estruturada (não conversacional); tokens de saída gratuitos" },
 ];
 
 if (typeof module !== "undefined" && module.exports) {

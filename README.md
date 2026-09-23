@@ -8,9 +8,9 @@
 
 Site que responde uma pergunta simples: *"quanto eu gastei, e quanto teria gasto se
 tivesse usado outro modelo?"*. Você informa os tokens de entrada/saída e o modelo usado; a
-calculadora mostra o custo com todos os modelos cadastrados — hoje **46 modelos em 13
+calculadora mostra o custo com todos os modelos cadastrados — hoje **58 modelos em 14
 provedores** (Anthropic, OpenAI, Google, DeepSeek, xAI, Mistral, Moonshot AI, Z.ai,
-Qwen, MiniMax, Cohere, Perplexity e Tencent) —
+Qwen, MiniMax, Cohere, Perplexity, Tencent e TypeSafe AI) —
 ordenados do mais barato ao mais caro, com a economia (ou o quanto custaria a mais) em
 relação ao que você usou.
 
@@ -224,21 +224,22 @@ foi construído" acima). Cada modelo em `js/pricing.js` é um objeto:
 Depois de uma revisão manual (inclusive as disparadas pela Issue automática), atualize
 `PRICING_META.updatedAt`, rode `npm run check` e finalize com `npm run accept:drift` para
 registrar a nova baseline. Fontes oficiais usadas na última
-atualização (13/09/2026):
+atualização (23/09/2026):
 
 - Anthropic (Claude): https://platform.claude.com/docs/en/about-claude/pricing
-- OpenAI: https://developers.openai.com/api/docs/models
+- OpenAI: https://developers.openai.com/api/docs/pricing
 - Google Gemini: https://ai.google.dev/gemini-api/docs/pricing
 - DeepSeek: https://api-docs.deepseek.com/quick_start/pricing/
 - xAI Grok: https://docs.x.ai/developers/pricing
 - Mistral: https://mistral.ai/pricing/api/
-- Moonshot AI (Kimi): https://platform.kimi.ai/
+- Moonshot AI (Kimi): https://platform.kimi.ai/docs/pricing/chat
 - Z.ai (GLM): https://docs.z.ai/guides/overview/pricing
 - Qwen: https://www.alibabacloud.com/help/en/model-studio/model-pricing
 - MiniMax: https://platform.minimax.io/docs/guides/pricing-paygo.md
 - Cohere: https://cohere.com/pricing
 - Perplexity: https://docs.perplexity.ai/getting-started/pricing
 - Tencent Hy: https://www.tencent.com/tencent-releases-and-open-sources-tencent-hy4-preview/
+- TypeSafe AI (Jev): https://typesafe.ai/blog/introducing-system-one-models-and-jev
 
 ## O que a calculadora **não** modela (por simplicidade)
 

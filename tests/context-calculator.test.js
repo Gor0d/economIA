@@ -160,7 +160,7 @@ test("calcula o custo real a partir do usage normalizado (cache lido + gravado +
 });
 
 test("catálogo de contexto tem fontes oficiais e não diverge dos preços-base", () => {
-  assert.equal(CONTEXT_PRICING_META.updatedAt, "2026-09-13");
+  assert.equal(CONTEXT_PRICING_META.updatedAt, "2026-09-23");
   for (const source of Object.values(CONTEXT_PRICING_META.sources)) assert.match(source, /^https:\/\//);
 
   for (const contextModel of CONTEXT_MODELS) {
