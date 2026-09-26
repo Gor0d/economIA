@@ -3,78 +3,78 @@
     "hash": "06f43f7622670786ae655a9bec2c358632cce86b04d69aaec48f94c433936580",
     "pendingHash": "5d184f8be5a8b7d6de06c2e3e07c44b7c91b84f808e91f60325548b10a4ed546",
     "url": "https://platform.claude.com/docs/en/about-claude/pricing",
-    "checkedAt": "2026-09-25T15:49:02.128Z",
+    "checkedAt": "2026-09-26T14:58:18.416Z",
     "changeDetectedAt": "2026-09-24T15:49:01.498Z"
   },
   "OpenAI": {
     "hash": "0903995645281f2e4aa95675fdd2e0853f3b1ef904de932509aaca2a8986804b",
     "pendingHash": "fccbfe6d52f1642fe804a4a0fa3c1913c9d6157549f532ec45b2a351ca089c50",
     "url": "https://developers.openai.com/api/docs/pricing",
-    "checkedAt": "2026-09-25T15:49:02.129Z",
+    "checkedAt": "2026-09-26T14:58:18.416Z",
     "changeDetectedAt": "2026-09-25T15:49:02.129Z"
   },
   "Google": {
     "hash": "d9aaec26c25b6df0b2c70c486140fcf1f4944b342043f08695932658fb793ad7",
     "pendingHash": "416d1f147fddc593b2c315eb8377b59dbfcbdb608133ef9490d92ad35bc86c23",
     "url": "https://ai.google.dev/gemini-api/docs/pricing",
-    "checkedAt": "2026-09-25T15:49:02.129Z",
+    "checkedAt": "2026-09-26T14:58:18.416Z",
     "changeDetectedAt": "2026-09-24T15:49:01.498Z"
   },
   "DeepSeek": {
     "hash": "e9ec0388cceafc65c3e0112f6f7ca88a3058abbdbcebb8bec1dbe7517f3b994e",
     "url": "https://api-docs.deepseek.com/quick_start/pricing/",
-    "checkedAt": "2026-09-25T15:49:02.129Z"
+    "checkedAt": "2026-09-26T14:58:18.416Z"
   },
   "xAI": {
     "hash": "a598fc3eeb6dc59b9d8acd0a653432e7a112df87dbb84c5c6d14eddbf954dd2a",
     "url": "https://docs.x.ai/developers/pricing",
-    "checkedAt": "2026-09-25T15:49:02.129Z"
+    "checkedAt": "2026-09-26T14:58:18.416Z"
   },
   "Mistral": {
     "hash": "48865e387818f47c8fd8ea8685ecf542f859d19b4a89982200f53eb0f4e81e43",
     "url": "https://mistral.ai/pricing/api/",
-    "checkedAt": "2026-09-25T15:49:02.129Z"
+    "checkedAt": "2026-09-26T14:58:18.416Z"
   },
   "Moonshot AI": {
     "hash": "0b468a31e467353d583be84e4e60e8bb4b2c7f8c0763136225d0c9540073f4a3",
     "url": "https://platform.kimi.ai/docs/pricing/chat",
-    "checkedAt": "2026-09-25T15:49:02.129Z"
+    "checkedAt": "2026-09-26T14:58:18.416Z"
   },
   "Z.ai": {
     "hash": "6b4385fc5f5e06c4579f31713d111b13f241c4392425a105a1f62305322c61e9",
     "url": "https://docs.z.ai/guides/overview/pricing",
-    "checkedAt": "2026-09-25T15:49:02.129Z"
+    "checkedAt": "2026-09-26T14:58:18.416Z"
   },
   "Qwen": {
     "hash": "e0bb10f226b91b7de43ec05b5a79befccaf706b8f96704c386819914208ecf5c",
     "url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
-    "checkedAt": "2026-09-25T15:49:02.129Z"
+    "checkedAt": "2026-09-26T14:58:18.416Z"
   },
   "MiniMax": {
     "hash": "b48e3411f163e07e0a3a9ab9d6b41508a0d08beb3ad223e66734b26e7afe439e",
     "url": "https://platform.minimax.io/docs/guides/pricing-paygo.md",
-    "checkedAt": "2026-09-25T15:49:02.129Z"
+    "checkedAt": "2026-09-26T14:58:18.416Z"
   },
   "Cohere": {
     "hash": "55ce4d09522243f9e150ac8023f5f13344cdd4d37a505d391c214b8a268efb59",
     "url": "https://cohere.com/pricing",
-    "checkedAt": "2026-09-25T15:49:02.129Z"
+    "checkedAt": "2026-09-26T14:58:18.416Z"
   },
   "Perplexity": {
     "hash": "c64b612455725b49b96fa7a9dc82d543a0277e47610bde45c7061e7af60695fd",
     "pendingHash": "e5630b57108b21a3532eaf60ed110c049dc305603731fe67bafe4c6be82631c9",
     "url": "https://docs.perplexity.ai/getting-started/pricing",
-    "checkedAt": "2026-09-25T15:49:02.129Z",
+    "checkedAt": "2026-09-26T14:58:18.416Z",
     "changeDetectedAt": "2026-09-25T15:49:02.129Z"
   },
   "Tencent": {
     "hash": "17b2c70d851053eac379d4af2054c4f58a9e1cc79a514dd8319ab74ec3a69f5b",
     "url": "https://www.tencent.com/tencent-releases-and-open-sources-tencent-hy4-preview/",
-    "checkedAt": "2026-09-25T15:49:02.129Z"
+    "checkedAt": "2026-09-26T14:58:18.416Z"
   },
   "TypeSafe AI": {
     "hash": "62a0e81dead838a423ab4f5286c86b96b982127f1152c120e99d399c33d7c312",
     "url": "https://typesafe.ai/blog/introducing-system-one-models-and-jev",
-    "checkedAt": "2026-09-25T15:49:02.129Z"
+    "checkedAt": "2026-09-26T14:58:18.416Z"
   }
 }
