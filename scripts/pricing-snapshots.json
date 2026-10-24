@@ -3,42 +3,42 @@
     "hash": "06f43f7622670786ae655a9bec2c358632cce86b04d69aaec48f94c433936580",
     "pendingHash": "317a15e20ee90c9418f848f2743e460c825c9b2572271a3f2981a40c50dc5c2b",
     "url": "https://platform.claude.com/docs/en/about-claude/pricing",
-    "checkedAt": "2026-10-23T15:44:36.944Z",
+    "checkedAt": "2026-10-24T14:31:53.077Z",
     "changeDetectedAt": "2026-10-14T15:49:25.311Z"
   },
   "OpenAI": {
     "hash": "0903995645281f2e4aa95675fdd2e0853f3b1ef904de932509aaca2a8986804b",
     "pendingHash": "5fc80afd9fdf8ba59233d8d1f66ac8761ee3b50ec16d92db3e2608253824f005",
     "url": "https://developers.openai.com/api/docs/pricing",
-    "checkedAt": "2026-10-23T15:44:36.944Z",
+    "checkedAt": "2026-10-24T14:31:53.077Z",
     "changeDetectedAt": "2026-10-21T15:57:17.627Z"
   },
   "Google": {
     "hash": "d9aaec26c25b6df0b2c70c486140fcf1f4944b342043f08695932658fb793ad7",
     "pendingHash": "b82dc969b01c12f328e97f9e3608b699481492dbc3cdc8b2af77c0462ad43ea8",
     "url": "https://ai.google.dev/gemini-api/docs/pricing",
-    "checkedAt": "2026-10-23T15:44:36.944Z",
+    "checkedAt": "2026-10-24T14:31:53.077Z",
     "changeDetectedAt": "2026-10-23T15:44:36.944Z"
   },
   "DeepSeek": {
     "hash": "e9ec0388cceafc65c3e0112f6f7ca88a3058abbdbcebb8bec1dbe7517f3b994e",
     "pendingHash": "1f768bd7ebf7e703e9f29b1d54d420e732bc56ccca81002990f2559b8e2b2dfd",
     "url": "https://api-docs.deepseek.com/quick_start/pricing/",
-    "checkedAt": "2026-10-23T15:44:36.944Z",
+    "checkedAt": "2026-10-24T14:31:53.077Z",
     "changeDetectedAt": "2026-10-16T15:22:06.094Z"
   },
   "xAI": {
     "hash": "a598fc3eeb6dc59b9d8acd0a653432e7a112df87dbb84c5c6d14eddbf954dd2a",
     "pendingHash": "7a315b814f7268f6969921da534d343de8546dcc10f1a2dab1c3870f8bea2706",
     "url": "https://docs.x.ai/developers/pricing",
-    "checkedAt": "2026-10-23T15:44:36.944Z",
+    "checkedAt": "2026-10-24T14:31:53.077Z",
     "changeDetectedAt": "2026-10-02T16:38:01.933Z"
   },
   "Mistral": {
     "hash": "48865e387818f47c8fd8ea8685ecf542f859d19b4a89982200f53eb0f4e81e43",
     "pendingHash": "ae731ab53fc9f235bac2bc7d4277547feca03e0ef7125ad6d66c0ea63123eda8",
     "url": "https://mistral.ai/pricing/api/",
-    "checkedAt": "2026-10-23T15:44:36.944Z",
+    "checkedAt": "2026-10-24T14:31:53.077Z",
     "changeDetectedAt": "2026-10-22T15:52:33.454Z"
   },
   "Moonshot AI": {
@@ -50,45 +50,45 @@
     "hash": "6b4385fc5f5e06c4579f31713d111b13f241c4392425a105a1f62305322c61e9",
     "pendingHash": "b7bcde24d28ae851aeda81f8fb1aa60165c766b05ede913a3d54818c309310ac",
     "url": "https://docs.z.ai/guides/overview/pricing",
-    "checkedAt": "2026-10-23T15:44:36.944Z",
+    "checkedAt": "2026-10-24T14:31:53.077Z",
     "changeDetectedAt": "2026-10-20T15:38:53.537Z"
   },
   "Qwen": {
     "hash": "e0bb10f226b91b7de43ec05b5a79befccaf706b8f96704c386819914208ecf5c",
     "pendingHash": "f49a964fa4bba0024f3503e7780724a2f9de1282f90b688450584c5f5df063f2",
     "url": "https://www.alibabacloud.com/help/en/model-studio/model-pricing",
-    "checkedAt": "2026-10-23T15:44:36.944Z",
+    "checkedAt": "2026-10-24T14:31:53.077Z",
     "changeDetectedAt": "2026-10-22T15:52:33.454Z"
   },
   "MiniMax": {
     "hash": "b48e3411f163e07e0a3a9ab9d6b41508a0d08beb3ad223e66734b26e7afe439e",
     "pendingHash": "40eab4b74da78dd9954a28436388cdd73491a392b0ffae4e3549f1c6f675398b",
     "url": "https://platform.minimax.io/docs/guides/pricing-paygo.md",
-    "checkedAt": "2026-10-23T15:44:36.944Z",
+    "checkedAt": "2026-10-24T14:31:53.077Z",
     "changeDetectedAt": "2026-10-23T15:44:36.944Z"
   },
   "Cohere": {
     "hash": "55ce4d09522243f9e150ac8023f5f13344cdd4d37a505d391c214b8a268efb59",
     "pendingHash": "77a00716fe824f86a505be7c0be64c54a5afe7430b91cb2dd094a56f9eb932da",
     "url": "https://cohere.com/pricing",
-    "checkedAt": "2026-10-23T15:44:36.944Z",
+    "checkedAt": "2026-10-24T14:31:53.077Z",
     "changeDetectedAt": "2026-10-21T15:57:17.627Z"
   },
   "Perplexity": {
     "hash": "c64b612455725b49b96fa7a9dc82d543a0277e47610bde45c7061e7af60695fd",
     "pendingHash": "49a8618d4c74040f17dab7150e5f988920d8ab8c923f5c3f65f2bebd4e0cd8a1",
     "url": "https://docs.perplexity.ai/getting-started/pricing",
-    "checkedAt": "2026-10-23T15:44:36.944Z",
+    "checkedAt": "2026-10-24T14:31:53.077Z",
     "changeDetectedAt": "2026-10-20T15:38:53.537Z"
   },
   "Tencent": {
     "hash": "17b2c70d851053eac379d4af2054c4f58a9e1cc79a514dd8319ab74ec3a69f5b",
     "url": "https://www.tencent.com/tencent-releases-and-open-sources-tencent-hy4-preview/",
-    "checkedAt": "2026-10-23T15:44:36.944Z"
+    "checkedAt": "2026-10-24T14:31:53.077Z"
   },
   "TypeSafe AI": {
     "hash": "62a0e81dead838a423ab4f5286c86b96b982127f1152c120e99d399c33d7c312",
     "url": "https://typesafe.ai/blog/introducing-system-one-models-and-jev",
-    "checkedAt": "2026-10-23T15:44:36.944Z"
+    "checkedAt": "2026-10-24T14:31:53.077Z"
   }
 }
