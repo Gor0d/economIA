@@ -1,5 +1,5 @@
 const PRICING_STATUS = Object.freeze({
-  checkedAt: "2026-10-27",
+  checkedAt: "2026-10-28",
   status: "attention",
 });
 
